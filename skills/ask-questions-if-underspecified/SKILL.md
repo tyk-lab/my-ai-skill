@@ -15,7 +15,7 @@ Do not use this skill when the request is already clear, or when a quick, low-ri
 
 ## Goal
 
-Ask the minimum set of clarifying questions needed to avoid wrong work. When clarification is needed, use the `request_user_input` tool to ask 1-3 short structured questions (if the tool is available in the current mode). Do not start implementing until the must-have questions are answered (or the user explicitly approves proceeding with stated assumptions).
+Ask the minimum set of clarifying questions needed to avoid wrong work; do not start implementing until the must-have questions are answered (or the user explicitly approves proceeding with stated assumptions).
 
 ## Workflow
 
@@ -35,11 +35,6 @@ If multiple plausible interpretations exist, assume it is underspecified.
 
 Ask 1-5 questions in the first pass. Prefer questions that eliminate whole branches of work.
 
-Tool requirement:
-- If clarification is required and `request_user_input` is available, MUST use `request_user_input` instead of plain chat questions.
-- Ask 1-3 short, high-leverage questions per `request_user_input` call.
-- If `request_user_input` is unavailable in the current mode, state that briefly and ask the same questions directly in chat.
-
 Make questions easy to answer:
 - Optimize for scannability (short, numbered questions; avoid paragraphs)
 - Offer multiple-choice options when possible
@@ -53,7 +48,6 @@ Make questions easy to answer:
 
 Until must-have answers arrive:
 - Do not run commands, edit files, or produce a detailed plan that depends on unknowns
-- If `request_user_input` was used, wait for its answers before continuing
 - Do perform a clearly labeled, low-risk discovery step only if it does not commit you to a direction (e.g., inspect repo structure, read relevant config files)
 
 If the user explicitly asks you to proceed without answers:
