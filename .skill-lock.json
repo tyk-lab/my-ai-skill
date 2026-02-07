@@ -62,7 +62,7 @@
       "skillPath": "skills/brainstorming/SKILL.md",
       "skillFolderHash": "761c2f359474328f40d73db9cb4cc1f5721917e5",
       "installedAt": "2026-02-04T06:00:09.691Z",
-      "updatedAt": "2026-02-04T06:00:09.691Z"
+      "updatedAt": "2026-02-07T14:24:28.940Z"
     },
     "using-superpowers": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -98,7 +98,7 @@
       "skillPath": "skills/writing-plans/SKILL.md",
       "skillFolderHash": "ff9617a705411dd9ab273366106f4f7f83f9f60d",
       "installedAt": "2026-02-04T06:26:06.268Z",
-      "updatedAt": "2026-02-04T06:26:06.268Z"
+      "updatedAt": "2026-02-07T14:23:59.872Z"
     },
     "executing-plans": {
       "source": "obra/superpowers",
@@ -125,7 +125,7 @@
       "skillPath": "skills/subagent-driven-development/SKILL.md",
       "skillFolderHash": "0a57c1590ddebe07ab4963238b6429447459659a",
       "installedAt": "2026-02-04T06:28:22.798Z",
-      "updatedAt": "2026-02-04T06:28:22.798Z"
+      "updatedAt": "2026-02-07T16:44:26.540Z"
     },
     "using-git-worktrees": {
       "source": "obra/superpowers",
@@ -134,7 +134,7 @@
       "skillPath": "skills/using-git-worktrees/SKILL.md",
       "skillFolderHash": "a5b3f5965f321175a7f07dcadff0bb79adb9e9f7",
       "installedAt": "2026-02-04T06:29:22.286Z",
-      "updatedAt": "2026-02-04T06:29:22.286Z"
+      "updatedAt": "2026-02-07T14:25:16.341Z"
     },
     "dispatching-parallel-agents": {
       "source": "obra/superpowers",
@@ -143,7 +143,7 @@
       "skillPath": "skills/dispatching-parallel-agents/SKILL.md",
       "skillFolderHash": "7c90f50b6fe4631ed73563396a8f87a505915509",
       "installedAt": "2026-02-04T06:29:55.422Z",
-      "updatedAt": "2026-02-04T06:29:55.422Z"
+      "updatedAt": "2026-02-07T16:43:25.982Z"
     },
     "folder-organization": {
       "source": "delphine-l/claude_global",
@@ -243,6 +243,15 @@
       "skillFolderHash": "db0be0d64598e39c0fbb121b7a7297a94f56a586",
       "installedAt": "2026-02-07T07:44:23.957Z",
       "updatedAt": "2026-02-07T07:44:23.957Z"
+    },
+    "test-driven-development": {
+      "source": "obra/superpowers",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/obra/superpowers.git",
+      "skillPath": "skills/test-driven-development/SKILL.md",
+      "skillFolderHash": "98904a7d8e0e04b9bd46220b9b17298f45fe0b72",
+      "installedAt": "2026-02-07T16:44:36.175Z",
+      "updatedAt": "2026-02-07T16:44:36.175Z"
     }
   },
   "dismissed": {
