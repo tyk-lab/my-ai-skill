@@ -225,15 +225,37 @@
       "skillFolderHash": "37042b6785309d8d51fa357f0fb6c323d36a0e18",
       "installedAt": "2026-02-04T10:41:22.105Z",
       "updatedAt": "2026-02-04T10:41:22.105Z"
+    },
+    "ask-questions-if-underspecified": {
+      "source": "trailofbits/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/trailofbits/skills.git",
+      "skillPath": "plugins/ask-questions-if-underspecified/skills/ask-questions-if-underspecified/SKILL.md",
+      "skillFolderHash": "db0be0d64598e39c0fbb121b7a7297a94f56a586",
+      "installedAt": "2026-02-05T04:56:00.863Z",
+      "updatedAt": "2026-02-05T05:02:43.763Z"
+    },
+    "web-component-design": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/wshobson/agents.git",
+      "skillPath": "plugins/ui-design/skills/web-component-design/SKILL.md",
+      "skillFolderHash": "b06348e715467984870fccd2f1257d59f11f597a",
+      "installedAt": "2026-02-06T07:04:10.181Z",
+      "updatedAt": "2026-02-06T07:04:10.181Z"
     }
   },
   "dismissed": {
     "findSkillsPrompt": true
   },
   "lastSelectedAgents": [
-    "claude-code",
+    "amp",
     "codex",
     "gemini-cli",
-    "opencode"
+    "github-copilot",
+    "kimi-cli",
+    "opencode",
+    "replit",
+    "claude-code"
   ]
 }
