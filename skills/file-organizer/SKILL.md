@@ -1,6 +1,8 @@
 ---
 name: file-organizer
-description: Intelligently organizes files and folders by understanding context, finding duplicates, and suggesting better organizational structures. Use when user wants to clean up directories, organize downloads, remove duplicates, or restructure projects.
+description: "Intelligently organizes messy personal/system directories by understanding context, finding duplicates, and executing cleanup plans. Use when users want to clean up Downloads/Documents/Desktop, archive old files, or de-duplicate scattered files. Not for defining software project repository conventions."
+risk: unknown
+source: community
 ---
 
 # File Organizer
@@ -14,6 +16,18 @@ description: Intelligently organizes files and folders by understanding context,
 - You want to establish better organization habits
 - You're starting a new project and need a good structure
 - You're cleaning up before archiving old projects
+
+## Scope Boundary and Routing
+
+Use this skill for operational cleanup of existing directories (moves, deduplication, archive cleanup).
+
+Do NOT use this skill for:
+
+- Defining standard repository layouts for engineering teams
+- Choosing long-term project folder conventions and naming standards
+- Designing reproducible research or software project structures
+
+For those cases, use project-structure guidance skills if available, or provide repository layout guidance directly.
 
 ## What This Skill Does
 

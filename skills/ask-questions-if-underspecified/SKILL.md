@@ -1,6 +1,6 @@
 ---
 name: ask-questions-if-underspecified
-description: Clarify requirements before implementing. Use when serious doubts arise.
+description: Clarify requirements before implementing. Use for simple/low-risk tasks with ambiguity, or when serious doubts arise.
 ---
 
 # Ask Questions If Underspecified
@@ -8,6 +8,8 @@ description: Clarify requirements before implementing. Use when serious doubts a
 ## When to Use
 
 Use this skill when a request has multiple plausible interpretations or key details (objective, scope, constraints, environment, or safety) are unclear.
+
+This is the default clarification path for simple/low-risk tasks. If the task appears medium/high complexity, route to brainstorming instead.
 
 ## When NOT to Use
 

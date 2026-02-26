@@ -35,7 +35,7 @@
       "skillPath": "skills/react-best-practices/SKILL.md",
       "skillFolderHash": "079b06a135401704ea94ab74c7c9d86c92ba259f",
       "installedAt": "2026-02-04T04:45:34.948Z",
-      "updatedAt": "2026-02-04T04:45:34.948Z"
+      "updatedAt": "2026-02-26T01:43:39.222Z"
     },
     "find-skills": {
       "source": "vercel-labs/skills",
@@ -44,7 +44,7 @@
       "skillPath": "skills/find-skills/SKILL.md",
       "skillFolderHash": "c2f31172b6f256272305a5e6e7228b258446899f",
       "installedAt": "2026-02-04T04:46:45.036Z",
-      "updatedAt": "2026-02-04T04:46:45.036Z"
+      "updatedAt": "2026-02-26T02:40:19.009Z"
     },
     "create-skill": {
       "source": "siviter-xyz/dot-agent",
@@ -60,18 +60,18 @@
       "sourceType": "github",
       "sourceUrl": "https://github.com/obra/superpowers.git",
       "skillPath": "skills/brainstorming/SKILL.md",
-      "skillFolderHash": "761c2f359474328f40d73db9cb4cc1f5721917e5",
+      "skillFolderHash": "d28aa4ed67fe5a3f1336f0fcccb1e548c67dc864",
       "installedAt": "2026-02-04T06:00:09.691Z",
-      "updatedAt": "2026-02-07T14:24:28.940Z"
+      "updatedAt": "2026-02-26T02:02:45.744Z"
     },
     "using-superpowers": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
       "sourceUrl": "https://github.com/sickn33/antigravity-awesome-skills.git",
       "skillPath": "skills/using-superpowers/SKILL.md",
-      "skillFolderHash": "986738c8d463796edec77e86824e53c6b03e61da",
+      "skillFolderHash": "df941e632b283ac7b69ab5c4b26f60837be85bf6",
       "installedAt": "2026-02-04T06:04:25.899Z",
-      "updatedAt": "2026-02-04T06:11:31.884Z"
+      "updatedAt": "2026-02-26T02:29:37.742Z"
     },
     "systematic-debugging": {
       "source": "obra/superpowers",
@@ -96,9 +96,9 @@
       "sourceType": "github",
       "sourceUrl": "https://github.com/obra/superpowers.git",
       "skillPath": "skills/writing-plans/SKILL.md",
-      "skillFolderHash": "ff9617a705411dd9ab273366106f4f7f83f9f60d",
+      "skillFolderHash": "cf6f5c8813cf0445276129a5f2b443927b50f645",
       "installedAt": "2026-02-04T06:26:06.268Z",
-      "updatedAt": "2026-02-07T14:23:59.872Z"
+      "updatedAt": "2026-02-26T02:29:42.256Z"
     },
     "executing-plans": {
       "source": "obra/superpowers",
@@ -150,18 +150,18 @@
       "sourceType": "github",
       "sourceUrl": "https://github.com/delphine-l/claude_global.git",
       "skillPath": "skills/project-management/folder-organization/SKILL.md",
-      "skillFolderHash": "356d06051fa8360c508e36be6595a123c523c10e",
+      "skillFolderHash": "53424951e2107f0d93fb70e32a76558226b84193",
       "installedAt": "2026-02-04T06:32:10.724Z",
-      "updatedAt": "2026-02-04T06:32:10.724Z"
+      "updatedAt": "2026-02-26T02:29:46.415Z"
     },
     "file-organizer": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
       "sourceUrl": "https://github.com/sickn33/antigravity-awesome-skills.git",
       "skillPath": "skills/file-organizer/SKILL.md",
-      "skillFolderHash": "07f9a8c28f7c57c481de0aba94983ad755b833f3",
+      "skillFolderHash": "9d6113183a90b789e4c4d6a7d6b8c20a1c583fc7",
       "installedAt": "2026-02-04T06:34:16.744Z",
-      "updatedAt": "2026-02-04T06:34:16.744Z"
+      "updatedAt": "2026-02-26T02:30:01.563Z"
     },
     "codex": {
       "source": "0xbigboss/claude-code",
@@ -252,6 +252,42 @@
       "skillFolderHash": "98904a7d8e0e04b9bd46220b9b17298f45fe0b72",
       "installedAt": "2026-02-07T16:44:36.175Z",
       "updatedAt": "2026-02-07T16:44:36.175Z"
+    },
+    "skill-creator": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/anthropics/skills.git",
+      "skillPath": "skills/skill-creator/SKILL.md",
+      "skillFolderHash": "5c26c1472b98de33a48074ba5d3efe3a727b8e37",
+      "installedAt": "2026-02-26T02:41:17.259Z",
+      "updatedAt": "2026-02-26T02:41:17.259Z"
+    },
+    "requesting-code-review": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/sickn33/antigravity-awesome-skills.git",
+      "skillPath": "skills/requesting-code-review/SKILL.md",
+      "skillFolderHash": "7c772e48488764ef5de95f426e5855f745f344a0",
+      "installedAt": "2026-02-26T03:23:37.050Z",
+      "updatedAt": "2026-02-26T03:23:37.050Z"
+    },
+    "finishing-a-development-branch": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/sickn33/antigravity-awesome-skills.git",
+      "skillPath": "skills/finishing-a-development-branch/SKILL.md",
+      "skillFolderHash": "d61baae6d5e06305667bd0fcbeebe9200003a821",
+      "installedAt": "2026-02-26T03:24:02.568Z",
+      "updatedAt": "2026-02-26T03:24:02.568Z"
+    },
+    "code-reviewer": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/sickn33/antigravity-awesome-skills.git",
+      "skillPath": "skills/code-reviewer/SKILL.md",
+      "skillFolderHash": "4cf7e0b023890e01c3d0637e95bd4ea0540ea72c",
+      "installedAt": "2026-02-26T03:24:20.739Z",
+      "updatedAt": "2026-02-26T03:24:20.739Z"
     }
   },
   "dismissed": {
@@ -260,6 +296,7 @@
   "lastSelectedAgents": [
     "amp",
     "codex",
+    "cursor",
     "gemini-cli",
     "github-copilot",
     "kimi-cli",

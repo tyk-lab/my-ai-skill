@@ -6,6 +6,18 @@ version: 1.0.0
 
 # UI/UX 设计师专家
 
+## 风格分流与优先级（避免冲突）
+
+在涉及视觉风格时，先选模式，再执行：
+
+- **专业基线模式（默认）**：面向产品界面、企业后台、强调一致性与可维护性。视觉规范以 `design-guide` 为主。
+- **表达型视觉模式**：仅当用户明确要求“更有冲击力/品牌化/创意化”时启用。视觉风格以 `frontend-design` 为主。
+
+冲突处理规则：
+
+- 同时触发多个 UI 技能时，先声明当前模式，只执行一套字体与风格规则。
+- 本技能主要负责 UX 方法、信息架构、流程和可用性；具体视觉落地遵循所选模式的主技能。
+
 ## 触发条件
 当用户提到以下内容时自动触发：
 - "设计师"
@@ -94,7 +106,7 @@ version: 1.0.0
 ### 字体排版系统
 ```css
 /* 字体家族 */
---font-primary: 'Inter', -apple-system, BlinkMacSystemFont;
+--font-primary: system-ui, -apple-system, 'Segoe UI', sans-serif;
 --font-mono: 'Fira Code', monospace;
 
 /* 字号层级 */

@@ -5,7 +5,7 @@ description: >
   Use when implementing UI components, design systems, or component composition with
   shadcn/ui, Radix primitives, or Tailwind-based component libraries.
   Do NOT use for non-React frameworks or custom CSS-only styling
-  (use moai-domain-frontend instead).
+  (use frontend-design instead).
 license: Apache-2.0
 compatibility: Designed for Claude Code
 allowed-tools: Read Grep Glob mcp__context7__resolve-library-id mcp__context7__get-library-docs
@@ -148,7 +148,7 @@ The Zod and React Hook Form integration pattern involves importing useForm from 
 
 - shadcn-components.md module for advanced component patterns and implementation
 - shadcn-theming.md module for theme system and customization strategies
-- moai-domain-uiux for design system architecture and principles
+- design-guide for cross-platform design system architecture and principles
 - moai-lang-typescript for TypeScript best practices
 - code-frontend for frontend development patterns
 

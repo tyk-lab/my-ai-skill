@@ -36,14 +36,14 @@
 
 ## Works Well With
 
-- `moai-domain-frontend` (Frontend development patterns)
+- `frontend-design` (Frontend development patterns)
 - `moai-baas-foundation` (Enterprise UI architecture)
 - `moai-security-api` (UI security implementation)
 - `moai-essentials-perf` (Performance optimization)
 - `moai-foundation-trust` (Accessibility and compliance)
-- `moai-domain-backend` (Backend integration)
+- Backend-focused implementation skills in your workspace (Backend integration)
 - `moai-baas-vercel-ext` (Frontend deployment)
-- `moai-domain-testing` (Component testing strategies)
+- `test-driven-development` (Component testing strategies)
 
 ## Changelog
 

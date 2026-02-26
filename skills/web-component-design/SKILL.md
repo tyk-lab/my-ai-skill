@@ -1,11 +1,28 @@
 ---
 name: web-component-design
-description: Master React, Vue, and Svelte component patterns including CSS-in-JS, composition strategies, and reusable component architecture. Use when building UI component libraries, designing component APIs, or implementing frontend design systems.
+description: Master React, Vue, and Svelte component patterns including CSS-in-JS, composition strategies, and reusable component architecture. Use when building reusable UI component libraries, designing component APIs, or refactoring component architecture. Focus on component engineering, not visual direction setting or design compliance audits.
 ---
 
 # Web Component Design
 
 Build reusable, maintainable UI components using modern frameworks with clean composition patterns and styling approaches.
+
+## Scope Boundary and Routing
+
+Use this skill for component engineering decisions:
+
+- Reusable component APIs
+- Composition patterns (compound components, slots, render props)
+- Styling architecture (CSS Modules, Tailwind strategy, CSS-in-JS choices)
+- Cross-component consistency in code structure
+
+Route to other skills when the task goal differs:
+
+- Visual style direction and aesthetics: `frontend-design`
+- Baseline product UI standards and spacing/typography rules: `design-guide`
+- UI/accessibility compliance audit and findings report: `web-design-guidelines`
+
+Do not use this skill as the primary skill for one-off page beautification or audit-only tasks.
 
 ## When to Use This Skill
 

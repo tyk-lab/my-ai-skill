@@ -1,6 +1,6 @@
 ---
 name: subagent-driven-development
-description: Use when executing implementation plans with independent tasks in the current session
+description: Use when executing a written implementation plan with independent tasks in the current session, with per-task review gates. Not for ad-hoc parallel debugging across unrelated failures.
 ---
 
 # Subagent-Driven Development
@@ -8,6 +8,12 @@ description: Use when executing implementation plans with independent tasks in t
 Execute plan by dispatching fresh subagent per task, with two-stage review after each: spec compliance review first, then code quality review.
 
 **Core principle:** Fresh subagent per task + two-stage review (spec then quality) = high quality, fast iteration
+
+## Scope Boundary and Routing
+
+- Use this skill when a concrete implementation plan already exists and tasks should be executed in controlled sequence with review gates.
+- Do not use this as the first choice for scattered, unrelated test failures without a plan.
+- For parallel root-cause investigations across independent failures, route to `dispatching-parallel-agents`.
 
 ## When to Use
 

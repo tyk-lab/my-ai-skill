@@ -1,6 +1,6 @@
 ---
 name: dispatching-parallel-agents
-description: Use when facing 2+ independent tasks that can be worked on without shared state or sequential dependencies
+description: Use when facing 2+ independent failures or investigation tasks that can be worked on without shared state or sequential dependencies. Best for unrelated debugging/test-failure domains, not for executing a written implementation plan.
 ---
 
 # Dispatching Parallel Agents
@@ -10,6 +10,12 @@ description: Use when facing 2+ independent tasks that can be worked on without 
 When you have multiple unrelated failures (different test files, different subsystems, different bugs), investigating them sequentially wastes time. Each investigation is independent and can happen in parallel.
 
 **Core principle:** Dispatch one agent per independent problem domain. Let them work concurrently.
+
+## Scope Boundary and Routing
+
+- Use this skill for ad-hoc parallel investigation/fix work across unrelated failure domains.
+- Do not use this as the primary workflow for executing a structured multi-task implementation plan.
+- If a written implementation plan already exists and tasks should be executed with per-task review gates, route to `subagent-driven-development` (same session) or `executing-plans` (separate session).
 
 ## When to Use
 

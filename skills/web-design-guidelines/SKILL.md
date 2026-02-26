@@ -1,6 +1,6 @@
 ---
 name: web-design-guidelines
-description: Review UI code for Web Interface Guidelines compliance. Use when asked to "review my UI", "check accessibility", "audit design", "review UX", or "check my site against best practices".
+description: Review UI code for Web Interface Guidelines compliance. Use for audit/review requests such as "review my UI", "check accessibility", "audit design", "review UX", or "check my site against best practices". This is an audit-only skill, not an implementation skill.
 metadata:
   author: vercel
   version: "1.0.0"
@@ -10,6 +10,12 @@ metadata:
 # Web Interface Guidelines
 
 Review files for compliance with Web Interface Guidelines.
+
+## Scope Boundary and Routing
+
+- This skill produces review findings; it does not implement UI changes.
+- For building or restyling interfaces, use `design-guide`, `frontend-design`, or `web-component-design` based on task intent.
+- If a user asks for fixes after audit, complete the audit first, then switch to an implementation skill.
 
 ## How It Works
 

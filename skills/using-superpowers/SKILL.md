@@ -1,6 +1,8 @@
 ---
 name: using-superpowers
-description: Use when starting any conversation - establishes how to find and use skills, requiring Skill tool invocation before ANY response including clarifying questions
+description: "Use when starting any conversation - establishes how to find and use skills, requiring Skill tool invocation before ANY response including clarifying questions"
+risk: unknown
+source: community
 ---
 
 <EXTREMELY-IMPORTANT>
@@ -68,11 +70,20 @@ These thoughts mean STOP—you're rationalizing:
 
 When multiple skills could apply, use this order:
 
-1. **Process skills first** (brainstorming, debugging) - these determine HOW to approach the task
+1. **Process skills first** (ask-questions-if-underspecified, brainstorming, debugging) - these determine HOW to approach the task
 2. **Implementation skills second** (frontend-design, mcp-builder) - these guide execution
 
-"Let's build X" → brainstorming first, then implementation skills.
+"Let's build X" → choose process skill by complexity, then implementation skills.
 "Fix this bug" → debugging first, then domain-specific skills.
+
+### Complexity Routing (Required)
+
+- **Simple/low-risk tasks**: use ask-questions-if-underspecified first.
+- **Medium/high-complexity tasks**: use brainstorming first.
+
+Quick heuristic:
+- Use ask-questions-if-underspecified when the likely change is small and uncertainty is mostly missing details.
+- Use brainstorming when there are architectural trade-offs, larger blast radius, or significant ambiguity in solution direction.
 
 ## Skill Types
 
@@ -85,3 +96,6 @@ The skill itself tells you which.
 ## User Instructions
 
 Instructions say WHAT, not HOW. "Add X" or "Fix Y" doesn't mean skip workflows.
+
+## When to Use
+This skill is applicable to execute the workflow or actions described in the overview.

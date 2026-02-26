@@ -7,6 +7,20 @@ description: Ensures modern, professional UI design across SwiftUI, Android, and
 
 Comprehensive design system ensuring every UI you build looks modern, professional, and consistent across all platforms (SwiftUI, Android Studio, web applications).
 
+## Style Mode and Priority (Conflict Resolution)
+
+Select one style mode before implementation and keep it consistent:
+
+- **Professional Baseline (default):** product UI, enterprise dashboards, app flows, or any request emphasizing clarity, consistency, and maintainability.
+- **Expressive Visual:** only when user explicitly asks for bold/creative/brand-forward aesthetics.
+
+Priority when skills overlap:
+
+- If `design-guide` and `frontend-design` both apply, decide mode first.
+- In **Professional Baseline**, `design-guide` owns typography, color, spacing, and component style decisions.
+- In **Expressive Visual**, `frontend-design` owns visual direction; `design-guide` still enforces usability guardrails (readability, spacing rhythm, interactive states, accessibility basics).
+- Never mix contradictory font rules in one output. Use one typography policy per task.
+
 ## Bundled Resources
 
 This skill includes additional reference materials:
