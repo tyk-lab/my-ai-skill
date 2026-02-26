@@ -154,6 +154,15 @@
       "installedAt": "2026-02-04T10:40:50.273Z",
       "updatedAt": "2026-02-04T10:40:50.273Z"
     },
+    "frontend-design": {
+      "source": "local-workspace",
+      "sourceType": "local",
+      "sourceUrl": "",
+      "skillPath": "skills/frontend-design/SKILL.md",
+      "skillFolderHash": "38c70970a089786a52c0b68565d47d3c998fdd3f",
+      "installedAt": "2026-02-26T04:43:30.621Z",
+      "updatedAt": "2026-02-26T04:43:30.621Z"
+    },
     "moai-library-shadcn": {
       "source": "modu-ai/moai-adk",
       "sourceType": "github",

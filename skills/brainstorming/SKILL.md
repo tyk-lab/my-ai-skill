@@ -1,6 +1,6 @@
 ---
 name: brainstorming
-description: "Use this for medium/high-complexity creative work - creating features, building components, adding functionality, or modifying behavior. For simple tasks, use ask-questions-if-underspecified first. Prefer request_user_input for requirement clarification and confirmation."
+description: "Use this for medium/high-complexity creative work - creating features, building components, adding functionality, or modifying behavior. For simple tasks, use ask-questions-if-underspecified first. Default to request_user_input for requirement clarification and confirmation when available."
 ---
 
 # Brainstorming Ideas Into Designs
@@ -15,10 +15,10 @@ Start by understanding the current project context, then clarify and confirm req
 Do NOT invoke any implementation skill, write any code, scaffold any project, or take any implementation action until you have presented a design and the user has approved it. This applies once the task is routed to brainstorming.
 </HARD-GATE>
 
-## Interaction Rule: request_user_input Preferred
+## Interaction Rule: request_user_input Default
 
 When requirement clarification or confirmation is needed:
-- Prefer `request_user_input` (if available in the current mode)
+- Default to `request_user_input` (if available in the current mode)
 - Ask 1-3 short, high-leverage questions per call
 - Use multiple-choice options with a recommended default when possible
 - If `request_user_input` is unavailable, ask the same questions directly in chat

@@ -76,6 +76,15 @@ When multiple skills could apply, use this order:
 "Let's build X" → choose process skill by complexity, then implementation skills.
 "Fix this bug" → debugging first, then domain-specific skills.
 
+## Interaction Default: request_user_input First
+
+When clarification, confirmation, or decision-making is needed during a workflow:
+
+- Default to `request_user_input` for structured user interaction.
+- Keep each call short and high-leverage (1-3 questions, clear options, recommended default).
+- Avoid long free-form back-and-forth when structured prompts can reduce interaction turns.
+- If `request_user_input` is unavailable in the current mode, fall back to concise numbered text Q&A in chat.
+
 ### Complexity Routing (Required)
 
 - **Simple/low-risk tasks**: use ask-questions-if-underspecified first.

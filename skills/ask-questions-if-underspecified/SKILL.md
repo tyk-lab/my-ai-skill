@@ -17,7 +17,7 @@ Do not use this skill when the request is already clear, or when a quick, low-ri
 
 ## Goal
 
-Ask the minimum set of clarifying questions needed to avoid wrong work. When clarification is needed, use the `request_user_input` tool to ask 1-3 short structured questions (if the tool is available in the current mode). Do not start implementing until the must-have questions are answered (or the user explicitly approves proceeding with stated assumptions).
+Ask the minimum set of clarifying questions needed to avoid wrong work. Default to the `request_user_input` tool for 1-3 short structured questions (if the tool is available in the current mode). Do not start implementing until the must-have questions are answered (or the user explicitly approves proceeding with stated assumptions).
 
 ## Workflow
 
@@ -38,7 +38,7 @@ If multiple plausible interpretations exist, assume it is underspecified.
 Ask 1-5 questions in the first pass. Prefer questions that eliminate whole branches of work.
 
 Tool requirement:
-- If clarification is required and `request_user_input` is available, MUST use `request_user_input` instead of plain chat questions.
+- If clarification is required and `request_user_input` is available, MUST use `request_user_input` instead of plain chat questions by default.
 - Ask 1-3 short, high-leverage questions per `request_user_input` call.
 - If `request_user_input` is unavailable in the current mode, state that briefly and ask the same questions directly in chat.
 

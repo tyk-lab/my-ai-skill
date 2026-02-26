@@ -49,10 +49,10 @@ When to Use:
 Module Organization:
 
 - Core Concepts: This file covers shadcn/ui overview, architecture, and ecosystem
-- Components: The shadcn-components.md module covers component library and advanced patterns
-- Theming: The shadcn-theming.md module covers theme system and customization
-- Advanced Patterns: The advanced-patterns.md module covers complex implementations
-- Optimization: The optimization.md module covers performance tuning
+- Components: The `modules/shadcn-components.md` module covers component library and advanced patterns
+- Theming: The `modules/shadcn-theming.md` module covers theme system and customization
+- Advanced Patterns: The `modules/advanced-patterns.md` module covers complex implementations
+- Optimization: The `modules/optimization.md` module covers performance tuning
 
 ---
 
@@ -146,8 +146,8 @@ The Zod and React Hook Form integration pattern involves importing useForm from 
 
 ## Works Well With
 
-- shadcn-components.md module for advanced component patterns and implementation
-- shadcn-theming.md module for theme system and customization strategies
+- modules/shadcn-components.md for advanced component patterns and implementation
+- modules/shadcn-theming.md for theme system and customization strategies
 - design-guide for cross-platform design system architecture and principles
 - web-component-design for TypeScript-heavy component architecture patterns
 - frontend-design for frontend implementation and visual execution patterns
