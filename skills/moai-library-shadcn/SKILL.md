@@ -149,8 +149,8 @@ The Zod and React Hook Form integration pattern involves importing useForm from 
 - shadcn-components.md module for advanced component patterns and implementation
 - shadcn-theming.md module for theme system and customization strategies
 - design-guide for cross-platform design system architecture and principles
-- moai-lang-typescript for TypeScript best practices
-- code-frontend for frontend development patterns
+- web-component-design for TypeScript-heavy component architecture patterns
+- frontend-design for frontend implementation and visual execution patterns
 
 ---
 

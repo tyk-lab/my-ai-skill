@@ -37,12 +37,12 @@
 ## Works Well With
 
 - `frontend-design` (Frontend development patterns)
-- `moai-baas-foundation` (Enterprise UI architecture)
-- `moai-security-api` (UI security implementation)
-- `moai-essentials-perf` (Performance optimization)
-- `moai-foundation-trust` (Accessibility and compliance)
+- `design-guide` (Enterprise UI architecture and baseline design system decisions)
+- Security-focused implementation practices in your workspace (UI security implementation)
+- `vercel-react-best-practices` (Performance optimization)
+- `web-design-guidelines` (Accessibility and compliance audit)
 - Backend-focused implementation skills in your workspace (Backend integration)
-- `moai-baas-vercel-ext` (Frontend deployment)
+- Deployment-focused skills in your workspace (Frontend deployment)
 - `test-driven-development` (Component testing strategies)
 
 ## Changelog

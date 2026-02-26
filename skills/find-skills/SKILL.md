@@ -1,11 +1,18 @@
 ---
 name: find-skills
-description: Helps users discover and install agent skills when they ask questions like "how do I do X", "find a skill for X", "is there a skill that can...", or express interest in extending capabilities. This skill should be used when the user is looking for functionality that might exist as an installable skill.
+description: Helps users discover and shortlist agent skills when they ask questions like "how do I do X", "find a skill for X", "is there a skill that can...", or express interest in extending capabilities. Use this skill for search/recommendation and install handoff decisions; route actual installation execution to skill-installer when available.
 ---
 
 # Find Skills
 
-This skill helps you discover and install skills from the open agent skills ecosystem.
+This skill helps you discover skills from the open agent skills ecosystem and prepare installation handoff.
+
+## Scope Boundary and Routing
+
+- Primary responsibility: discover, compare, and recommend relevant skills.
+- Secondary responsibility: prepare installation instructions or handoff.
+- If installation should be performed by workflow, route execution to `skill-installer` when available.
+- If `skill-installer` is not available, you may run `npx skills add ...` directly.
 
 ## When to Use This Skill
 
@@ -86,7 +93,7 @@ Learn more: https://skills.sh/vercel-labs/agent-skills/vercel-react-best-practic
 
 ### Step 4: Offer to Install
 
-If the user wants to proceed, you can install the skill for them:
+If the user wants to proceed, execute installation via `skill-installer` when available. Otherwise, install directly:
 
 ```bash
 npx skills add <owner/repo@skill> -g -y
