@@ -1,6 +1,6 @@
 ---
 name: requesting-code-review
-description: "Use when completing tasks, implementing major features, or before merging to verify work meets requirements"
+description: "Use when review should be initiated (after tasks/features/batches, before merge). This skill prepares review context and dispatches review execution; it does not replace code-reviewer findings or receiving-code-review feedback triage."
 risk: unknown
 source: community
 ---
@@ -10,6 +10,12 @@ source: community
 Dispatch superpowers:code-reviewer subagent to catch issues before they cascade.
 
 **Core principle:** Review early, review often.
+
+## Scope Boundary and Routing
+
+- Primary responsibility: decide review timing, gather SHAs/context, and dispatch `code-reviewer`.
+- This skill does not perform deep review analysis itself.
+- After review feedback is returned, route to `receiving-code-review` to evaluate, triage, and implement responses safely.
 
 ## When to Request Review
 

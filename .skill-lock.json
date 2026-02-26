@@ -1,24 +1,6 @@
 {
   "version": 3,
   "skills": {
-    "vercel-composition-patterns": {
-      "source": "vercel-labs/agent-skills",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/vercel-labs/agent-skills.git",
-      "skillPath": "skills/composition-patterns/SKILL.md",
-      "skillFolderHash": "bf90d0a4b83ea054653350f9c67f6de235d3a368",
-      "installedAt": "2026-02-04T04:45:34.475Z",
-      "updatedAt": "2026-02-04T04:45:34.475Z"
-    },
-    "vercel-react-native-skills": {
-      "source": "vercel-labs/agent-skills",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/vercel-labs/agent-skills.git",
-      "skillPath": "skills/react-native-skills/SKILL.md",
-      "skillFolderHash": "8b4c6a51914e2111ab6f4f00cb81778652aa241d",
-      "installedAt": "2026-02-04T04:45:34.594Z",
-      "updatedAt": "2026-02-04T04:45:34.594Z"
-    },
     "web-design-guidelines": {
       "source": "vercel-labs/agent-skills",
       "sourceType": "github",
@@ -45,15 +27,6 @@
       "skillFolderHash": "c2f31172b6f256272305a5e6e7228b258446899f",
       "installedAt": "2026-02-04T04:46:45.036Z",
       "updatedAt": "2026-02-26T02:40:19.009Z"
-    },
-    "create-skill": {
-      "source": "siviter-xyz/dot-agent",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/siviter-xyz/dot-agent.git",
-      "skillPath": "skills/create-skill/SKILL.md",
-      "skillFolderHash": "b6c7c211fe7ceeafdc1fb12680f021586cf6fec1",
-      "installedAt": "2026-02-04T05:55:50.794Z",
-      "updatedAt": "2026-02-04T05:55:50.794Z"
     },
     "brainstorming": {
       "source": "obra/superpowers",
@@ -145,15 +118,6 @@
       "installedAt": "2026-02-04T06:29:55.422Z",
       "updatedAt": "2026-02-07T16:43:25.982Z"
     },
-    "folder-organization": {
-      "source": "delphine-l/claude_global",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/delphine-l/claude_global.git",
-      "skillPath": "skills/project-management/folder-organization/SKILL.md",
-      "skillFolderHash": "53424951e2107f0d93fb70e32a76558226b84193",
-      "installedAt": "2026-02-04T06:32:10.724Z",
-      "updatedAt": "2026-02-26T02:29:46.415Z"
-    },
     "file-organizer": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -163,15 +127,6 @@
       "installedAt": "2026-02-04T06:34:16.744Z",
       "updatedAt": "2026-02-26T02:30:01.563Z"
     },
-    "codex": {
-      "source": "0xbigboss/claude-code",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/0xbigboss/claude-code.git",
-      "skillPath": ".claude/skills/codex/SKILL.md",
-      "skillFolderHash": "ea1b6e8e916d2b6dc47adfe5f41e09fd7ad8cec9",
-      "installedAt": "2026-02-04T06:45:59.055Z",
-      "updatedAt": "2026-02-04T06:45:59.055Z"
-    },
     "fact-check": {
       "source": "jwynia/agent-skills",
       "sourceType": "github",
@@ -180,24 +135,6 @@
       "skillFolderHash": "f99e5b2b6b9c54585800fd04caf8833eb8970c9a",
       "installedAt": "2026-02-04T06:54:58.268Z",
       "updatedAt": "2026-02-04T06:54:58.268Z"
-    },
-    "cross-platform-compatibility": {
-      "source": "aj-geddes/useful-ai-prompts",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/aj-geddes/useful-ai-prompts.git",
-      "skillPath": "skills/cross-platform-compatibility/SKILL.md",
-      "skillFolderHash": "cba1b20670ffb9189fbb3b9aeed7d883d8abc4d8",
-      "installedAt": "2026-02-04T07:00:28.262Z",
-      "updatedAt": "2026-02-04T07:00:28.262Z"
-    },
-    "powershell-shell-detection": {
-      "source": "josiahsiegel/claude-plugin-marketplace",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/josiahsiegel/claude-plugin-marketplace.git",
-      "skillPath": "plugins/powershell-master/skills/powershell-shell-detection/SKILL.md",
-      "skillFolderHash": "88e2fd973aa19e841fddf4f50495aa6ab92a6eab",
-      "installedAt": "2026-02-04T07:01:03.886Z",
-      "updatedAt": "2026-02-04T07:01:03.886Z"
     },
     "ui-ux-designer": {
       "source": "lotosbin/claude-skills",

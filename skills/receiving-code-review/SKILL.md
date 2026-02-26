@@ -1,6 +1,6 @@
 ---
 name: receiving-code-review
-description: Use when receiving code review feedback, before implementing suggestions, especially if feedback seems unclear or technically questionable - requires technical rigor and verification, not performative agreement or blind implementation
+description: Use when receiving code review feedback, before implementing suggestions, especially if feedback seems unclear or technically questionable. This skill handles evaluation and response to feedback, not initial review dispatch or full review execution.
 ---
 
 # Code Review Reception
@@ -10,6 +10,13 @@ description: Use when receiving code review feedback, before implementing sugges
 Code review requires technical evaluation, not emotional performance.
 
 **Core principle:** Verify before implementing. Ask before assuming. Technical correctness over social comfort.
+
+## Scope Boundary and Routing
+
+- Use this skill after review comments already exist.
+- For initiating and dispatching a review, use `requesting-code-review`.
+- For producing the review findings themselves, use `code-reviewer`.
+- This skill governs how to assess and respond to feedback, including pushback decisions.
 
 ## The Response Pattern
 

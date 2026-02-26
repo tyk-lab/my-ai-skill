@@ -1,15 +1,18 @@
 ---
 name: code-reviewer
-description: Elite code review expert specializing in modern AI-powered code
-  analysis, security vulnerabilities, performance optimization, and production
-  reliability. Masters static analysis tools, security scanning, and
-  configuration review with 2024/2025 best practices. Use PROACTIVELY for code
-  quality assurance.
+description: Elite code review execution skill for analyzing code changes, identifying security/performance/reliability issues, and producing prioritized findings. Use for the review pass itself after review scope is prepared.
 metadata:
   model: opus
 risk: unknown
 source: community
 ---
+
+## Scope Boundary and Routing
+
+- This skill performs the actual technical review and outputs findings.
+- For deciding when/how to trigger a review in workflow, use `requesting-code-review`.
+- For handling received review comments and deciding what to implement or push back on, use `receiving-code-review`.
+- Do not use this skill as the primary workflow controller for plan execution; it is a reviewer role.
 
 ## Use this skill when
 
