@@ -23,7 +23,9 @@ Ask the minimum set of clarifying questions needed to avoid wrong work. Default 
 
 ### 1) Decide whether the request is underspecified
 
-Treat a request as underspecified if after exploring how to perform the work, some or all of the following are not clear:
+First, perform a quick, low-risk exploration of the project context (read relevant files, configs, existing patterns) to understand the current state. Do not make changes during this step.
+
+Then, treat a request as underspecified if some or all of the following are not clear:
 - Define the objective (what should change vs stay the same)
 - Define "done" (acceptance criteria, examples, edge cases)
 - Define scope (which files/components/users are in/out)
@@ -35,7 +37,7 @@ If multiple plausible interpretations exist, assume it is underspecified.
 
 ### 2) Ask must-have questions first (keep it small)
 
-Ask 1-5 questions in the first pass. Prefer questions that eliminate whole branches of work.
+Ask up to 5 questions total in the first pass (1-3 per `request_user_input` call). Prefer questions that eliminate whole branches of work.
 
 Tool requirement:
 - If clarification is required and `request_user_input` is available, MUST use `request_user_input` instead of plain chat questions by default.
@@ -54,7 +56,7 @@ Make questions easy to answer:
 ### 3) Pause before acting
 
 Until must-have answers arrive:
-- Do not run commands, edit files, or produce a detailed plan that depends on unknowns
+- Do not run commands, edit files, produce a detailed plan, or begin implementation in any form
 - If `request_user_input` was used, wait for its answers before continuing
 - Do perform a clearly labeled, low-risk discovery step only if it does not commit you to a direction (e.g., inspect repo structure, read relevant config files)
 
@@ -76,15 +78,16 @@ Once you have answers, restate the requirements in 1-3 sentences (including key 
 
 ```text
 1) Scope?
-a) Minimal change (default)
-b) Refactor while touching the area
-c) Not sure - use default
-2) Compatibility target?
-a) Current project defaults (default)
-b) Also support older versions: <specify>
-c) Not sure - use default
+   a) Minimal change (default)
+   b) Refactor while touching the area
+   c) Not sure - use default
 
-Reply with: defaults (or 1a 2a)
+2) Compatibility target?
+   a) Current project defaults (default)
+   b) Also support older versions: <specify>
+   c) Not sure - use default
+
+Reply: defaults (or 1a 2a)
 ```
 
 ## Anti-patterns
