@@ -1,7 +1,8 @@
 ---
 name: ui-ux-designer
 description: UI/UX 设计师专家，精通界面设计、交互设计、用户体验和设计系统
-version: 1.0.0
+metadata:
+  version: "1.0.0"
 ---
 
 # UI/UX 设计师专家
@@ -84,58 +85,73 @@ version: 1.0.0
 ## 常见解决方案
 
 ### 色彩系统设计
-```css
-/* 主色调 */
---primary-100: #E3F2FD;
---primary-500: #2196F3;
---primary-900: #0D47A1;
 
-/* 中性色 */
+Define CSS custom properties following the active style mode:
+
+- **Professional Baseline**: follow `design-guide` for concrete color values (neutral base + one accent, avoid generic blue)
+- **Expressive Visual**: follow `frontend-design` for distinctive palettes
+
+```css
+/* Structure example — actual values per active style mode */
+--primary-100: /* lightest */;
+--primary-500: /* main accent */;
+--primary-900: /* darkest */;
+
+/* Neutral */
 --gray-50: #FAFAFA;
 --gray-100: #F5F5F5;
 --gray-500: #9E9E9E;
 --gray-900: #212121;
 
-/* 功能色 */
+/* Semantic */
 --success: #4CAF50;
 --warning: #FF9800;
 --error: #F44336;
---info: #2196F3;
+--info: /* accent color */;
 ```
 
 ### 字体排版系统
+
+Use the typography scale from the active style mode skill. Structure:
+
 ```css
-/* 字体家族 */
+/* Font family */
 --font-primary: system-ui, -apple-system, 'Segoe UI', sans-serif;
 --font-mono: 'Fira Code', monospace;
 
-/* 字号层级 */
---text-xs: 12px;
---text-sm: 14px;
---text-base: 16px;
+/* Type scale — values per active style mode */
+--text-xs: 12px;  /* captions only, use sparingly */
+--text-sm: 14px;  /* secondary text */
+--text-base: 16px; /* body minimum */
 --text-lg: 18px;
 --text-xl: 20px;
 --text-2xl: 24px;
 --text-3xl: 30px;
 --text-4xl: 36px;
 
-/* 行高 */
+/* Line height */
 --leading-tight: 1.25;
 --leading-normal: 1.5;
 --leading-relaxed: 1.75;
 ```
 
+> **Note**: In Professional Baseline mode, body text minimum is 16px per `design-guide`.
+
 ### 间距系统 (8px 网格)
+
+Use strict 8px multiples per `design-guide` in Professional Baseline mode:
+
 ```css
---space-1: 4px;
+--space-1: 4px;   /* only for icon internal padding */
 --space-2: 8px;
---space-3: 12px;
 --space-4: 16px;
 --space-6: 24px;
 --space-8: 32px;
 --space-12: 48px;
 --space-16: 64px;
 ```
+
+> **Note**: Avoid non-8px values (e.g. 12px) for layout spacing. 4px is acceptable only for micro-adjustments within icons or inline elements.
 
 ### 组件设计原则
 1. **一致性**: 相同功能使用相同组件

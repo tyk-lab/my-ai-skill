@@ -1,6 +1,6 @@
 ---
 name: design-guide
-description: Ensures modern, professional UI design across SwiftUI, Android, and web platforms. Use when building ANY user interface components including buttons, forms, cards, layouts, navigation, or complete screens. Enforces clean minimal design, neutral color palettes with one accent color, 8px grid spacing system, proper typography hierarchy, and clear interactive states. Always reference before creating or modifying UI elements.
+description: Ensures modern, professional UI design in Professional Baseline mode. Use when building product UI, enterprise dashboards, or app flows that prioritize clarity, consistency, and maintainability. Enforces clean minimal design, neutral color palettes with one accent color, 8px grid spacing, proper typography hierarchy, and clear interactive states. Not for bold/creative/brand-forward aesthetics (use frontend-design instead).
 ---
 
 # Design Guide
