@@ -7,22 +7,17 @@ description: >
   Do NOT use for non-React frameworks or custom CSS-only styling
   (use frontend-design instead).
 license: Apache-2.0
-compatibility: Designed for Claude Code
-allowed-tools: Read Grep Glob mcp__context7__resolve-library-id mcp__context7__get-library-docs
-user-invocable: false
 metadata:
   version: "2.1.0"
   category: "library"
   modularized: "true"
   status: "active"
-  updated: "2026-01-11"
+  updated: "2026-02-27"
   tags: "library, shadcn, enterprise, development, ui"
   aliases: "moai-library-shadcn"
-
-# MoAI Extension: Triggers
-triggers:
-  keywords: ["shadcn", "component library", "design system", "radix", "tailwind", "ui components"]
 ---
+
+<!-- MoAI Extension: Triggers — keywords: shadcn, component library, design system, radix, tailwind, ui components -->
 
 ## Quick Reference
 
@@ -178,5 +173,5 @@ Latest Versions as of November 2025:
 
 ---
 
-Last Updated: 2026-01-11
+Last Updated: 2026-02-27
 Status: Production Ready
