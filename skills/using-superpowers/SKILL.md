@@ -1,23 +1,15 @@
 ---
 name: using-superpowers
-description: "Use when starting any conversation - establishes how to find and use skills, requiring Skill tool invocation before ANY response including clarifying questions"
-risk: unknown
-source: community
+description: "Establishes how to find, load, and use skills across all environments. Ensures skill invocation before action, including clarifying questions."
 ---
 
-<EXTREMELY-IMPORTANT>
-If you think there is even a 1% chance a skill might apply to what you are doing, you ABSOLUTELY MUST invoke the skill.
+> **Core principle: If any skill might be relevant to the current task, you MUST load and read it before taking action.**
+>
+> This is non-negotiable. Even a 1% chance means you should check. If a loaded skill turns out to be irrelevant, you can skip it.
 
-IF A SKILL APPLIES TO YOUR TASK, YOU DO NOT HAVE A CHOICE. YOU MUST USE IT.
-
-This is not negotiable. This is not optional. You cannot rationalize your way out of this.
-</EXTREMELY-IMPORTANT>
-
-## How to Access Skills
-
-**In Claude Code:** Use the `Skill` tool. When you invoke a skill, its content is loaded and presented to you—follow it directly. Never use the Read tool on skill files.
-
-**In other environments:** Check your platform's documentation for how skills are loaded.
+**Universal rules:**
+- Skills MUST be actually read and followed, never relied on from memory
+- Skills evolve over time — always read the current version before use
 
 # Using Skills
 
@@ -29,7 +21,7 @@ This is not negotiable. This is not optional. You cannot rationalize your way ou
 digraph skill_flow {
     "User message received" [shape=doublecircle];
     "Might any skill apply?" [shape=diamond];
-    "Invoke Skill tool" [shape=box];
+    "Invoke Skill tool" [shape=box label="Load skill (read SKILL.md)"];
     "Announce: 'Using [skill] to [purpose]'" [shape=box];
     "Has checklist?" [shape=diamond];
     "Create TodoWrite todo per item" [shape=box];
@@ -37,7 +29,7 @@ digraph skill_flow {
     "Respond (including clarifications)" [shape=doublecircle];
 
     "User message received" -> "Might any skill apply?";
-    "Might any skill apply?" -> "Invoke Skill tool" [label="yes, even 1%"];
+    "Might any skill apply?" -> "Invoke Skill tool" [label="yes"];
     "Might any skill apply?" -> "Respond (including clarifications)" [label="definitely not"];
     "Invoke Skill tool" -> "Announce: 'Using [skill] to [purpose]'";
     "Announce: 'Using [skill] to [purpose]'" -> "Has checklist?";
@@ -105,6 +97,3 @@ The skill itself tells you which.
 ## User Instructions
 
 Instructions say WHAT, not HOW. "Add X" or "Fix Y" doesn't mean skip workflows.
-
-## When to Use
-This skill is applicable to execute the workflow or actions described in the overview.
