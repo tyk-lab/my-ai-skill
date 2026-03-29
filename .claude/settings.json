@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(python3 -c \":*)"
+      "Bash(python3 -c \":*)",
+      "Read",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(tail:*)"
     ]
   }
 }

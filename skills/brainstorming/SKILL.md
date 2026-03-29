@@ -1,6 +1,6 @@
 ---
 name: brainstorming
-description: "Explores user intent, requirements and design before implementation through structured questioning. Use for medium/high-complexity creative work: new features, significant component changes, or behavioral modifications that need design exploration."
+description: "Explores user intent, requirements and design before implementation through structured questioning. Use for medium/high-complexity creative work: new features, significant component changes, or behavioral modifications that need design exploration. Not for simple clarification with 1-3 unknowns (use ask-questions-if-underspecified instead)."
 ---
 
 # Brainstorming Ideas Into Designs
@@ -9,19 +9,11 @@ description: "Explores user intent, requirements and design before implementatio
 
 Help turn ideas into fully formed designs and specs through structured collaborative dialogue using the question tool for deeper exploration.
 
-Start by understanding the current project context, then systematically clarify requirements and design intent. Use the question tool to gather batches of related questions, deepening understanding before moving to design phases. Once you understand what you're building, present the design in small sections (200-300 words), checking after each section whether it looks right so far.
+Start by understanding the current project context, then systematically clarify requirements and design intent. Use the question tool to gather batches of related questions, deepening understanding before moving to design phases. Once you understand what you're building, present the design in small sections (120-250 words), checking after each section whether it looks right so far.
 
 ## Question Tool Priority
 
-Try tools in this order — use the first one available in the current environment:
-1. `AskUserQuestion`
-2. `ask_user`
-3. `request_user_input` (only when supported in the current collaboration mode)
-4. None available → briefly state that no structured question tool is available, then ask the same questions directly in chat.
-
-Before calling any question tool, verify both:
-- The tool exists in the current runtime.
-- The current mode allows it (for example, some environments disable `request_user_input` outside Plan mode).
+Use the first available: `AskUserQuestion` → `ask_user` → `request_user_input` → plain chat. Verify the tool exists before calling; some environments disable `request_user_input` outside Plan mode.
 
 ## When to Use
 

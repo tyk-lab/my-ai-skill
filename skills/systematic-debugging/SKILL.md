@@ -1,6 +1,6 @@
 ---
 name: systematic-debugging
-description: Use when encountering any bug, test failure, or unexpected behavior, before proposing fixes
+description: First step when encountering any bug, test failure, or unexpected behavior. Investigates root cause before proposing fixes. If investigation reveals multiple independent failures with no shared root cause, route to dispatching-parallel-agents.
 ---
 
 # Systematic Debugging

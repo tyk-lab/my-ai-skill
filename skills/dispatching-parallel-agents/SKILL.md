@@ -1,6 +1,6 @@
 ---
 name: dispatching-parallel-agents
-description: Use when facing 2+ independent failures or investigation tasks that can be worked on without shared state or sequential dependencies. Best for unrelated debugging/test-failure domains, not for executing a written implementation plan.
+description: Use after root-cause investigation (via systematic-debugging) has confirmed 2+ failures are truly independent with no shared cause. Not for initial bug triage — run systematic-debugging first. Not for executing implementation plans.
 ---
 
 # Dispatching Parallel Agents

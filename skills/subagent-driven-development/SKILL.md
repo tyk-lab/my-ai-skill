@@ -1,6 +1,6 @@
 ---
 name: subagent-driven-development
-description: Use when executing a written implementation plan with independent tasks in the current session, with per-task review gates. Not for ad-hoc parallel debugging across unrelated failures.
+description: Execute a written implementation plan in the current session using fresh subagents per task with automated review gates. Use for fast iteration without switching sessions. For delegated batch execution with manual review checkpoints, use executing-plans instead. Not for ad-hoc parallel debugging across unrelated failures.
 ---
 
 # Subagent-Driven Development

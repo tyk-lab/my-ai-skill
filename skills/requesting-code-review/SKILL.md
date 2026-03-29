@@ -1,6 +1,6 @@
 ---
 name: requesting-code-review
-description: "Use when review should be initiated (after tasks/features/batches, before merge). This skill prepares review context and dispatches review execution; it does not replace code-reviewer findings or receiving-code-review feedback triage."
+description: "Step 1 of 3 in the code review workflow: requesting-code-review → code-reviewer → receiving-code-review. Use to initiate a review after completing tasks/features, before merge. Prepares review scope and context for code-reviewer to execute against."
 risk: unknown
 source: community
 ---

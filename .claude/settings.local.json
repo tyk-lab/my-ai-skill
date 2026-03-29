@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git config:*)"
+      "Bash(git config:*)",
+      "Read",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(tail:*)"
     ]
   }
 }

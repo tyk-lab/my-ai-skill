@@ -1,15 +1,13 @@
 ---
 name: ask-questions-if-underspecified
-description: Clarify requirements before implementing. Use this skill whenever a request has multiple plausible interpretations, key details are missing, or you feel uncertain about scope, objective, or constraints — even if the task seems simple. When in doubt, ask first.
+description: Clarify requirements before implementing simple tasks where 1–3 key details are missing (scope, objective, constraints). Use when the request has a few plausible interpretations but is a single local change. For medium/high-complexity tasks with multiple components, meaningful design tradeoffs, or architecture decisions, use brainstorming instead.
 ---
 
 # Ask Questions If Underspecified
 
 ## When to Use
 
-Use this skill when a request has multiple plausible interpretations or key details (objective, scope, constraints, environment, or safety) are unclear.
-
-This is the default clarification path for simple/low-risk tasks. If the task appears medium/high complexity, route to brainstorming instead.
+Use this skill for simple/low-risk tasks where a request has multiple plausible interpretations or key details (objective, scope, constraints, environment, or safety) are unclear. If the task appears medium/high complexity, route to brainstorming instead.
 
 Use this quick routing rubric:
 - Stay in this skill when clarification is mostly about one local change and 1-3 key unknowns.
@@ -123,4 +121,4 @@ Reply: defaults (or 1a 2a)
 
 ## Escalation
 
-If after two rounds of questions the task is still unclear, or if the answers reveal significant design decisions ahead, route to the **brainstorming** skill instead of continuing to clarify in circles.
+If after two rounds of questions the task is still unclear, or if the answers reveal significant design decisions ahead, stop and tell the user: "This needs deeper design exploration — let's switch to the brainstorming skill." Briefly summarize the answers collected so far so the context carries over when brainstorming starts.

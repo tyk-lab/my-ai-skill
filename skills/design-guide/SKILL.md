@@ -1,6 +1,6 @@
 ---
 name: design-guide
-description: Ensures modern, professional UI design in Professional Baseline mode. Use when building product UI, enterprise dashboards, or app flows that prioritize clarity, consistency, and maintainability. Enforces clean minimal design, neutral color palettes with one accent color, 8px grid spacing, proper typography hierarchy, and clear interactive states. Not for bold/creative/brand-forward aesthetics (use frontend-design instead).
+description: Ensures modern, professional UI design in Professional Baseline mode. Use when building product UI, enterprise dashboards, or app flows that prioritize clarity, consistency, and maintainability. Enforces clean minimal design, neutral color palettes with one accent color, 8px grid spacing, proper typography hierarchy, and clear interactive states. Not for bold/creative/brand-forward aesthetics (use frontend-design instead). Not for auditing existing UI against guidelines (use web-design-guidelines instead).
 ---
 
 # Design Guide

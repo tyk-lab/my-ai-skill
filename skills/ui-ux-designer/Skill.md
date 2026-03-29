@@ -1,6 +1,6 @@
 ---
 name: ui-ux-designer
-description: UI/UX 设计师专家，精通界面设计、交互设计、用户体验和设计系统
+description: UI/UX 设计师专家，负责 UX 方法论、信息架构、交互流程与可用性分析。不负责视觉落地——专业基线视觉规范由 design-guide 主导，表达型视觉风格由 frontend-design 主导。
 metadata:
   version: "1.0.0"
 ---
