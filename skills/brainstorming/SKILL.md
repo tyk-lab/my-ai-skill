@@ -7,9 +7,21 @@ description: "Explores user intent, requirements and design before implementatio
 
 ## Overview
 
-Help turn ideas into fully formed designs and specs through structured collaborative dialogue using `request_user_input` for deeper exploration.
+Help turn ideas into fully formed designs and specs through structured collaborative dialogue using the question tool for deeper exploration.
 
-Start by understanding the current project context, then systematically clarify requirements and design intent. Use `request_user_input` to gather batches of related questions, deepening understanding before moving to design phases. Once you understand what you're building, present the design in small sections (200-300 words), checking after each section whether it looks right so far.
+Start by understanding the current project context, then systematically clarify requirements and design intent. Use the question tool to gather batches of related questions, deepening understanding before moving to design phases. Once you understand what you're building, present the design in small sections (200-300 words), checking after each section whether it looks right so far.
+
+## Question Tool Priority
+
+Try tools in this order — use the first one available in the current environment:
+1. `AskUserQuestion`
+2. `ask_user`
+3. `request_user_input` (only when supported in the current collaboration mode)
+4. None available → briefly state that no structured question tool is available, then ask the same questions directly in chat.
+
+Before calling any question tool, verify both:
+- The tool exists in the current runtime.
+- The current mode allows it (for example, some environments disable `request_user_input` outside Plan mode).
 
 ## When to Use
 
@@ -29,38 +41,42 @@ Start by understanding the current project context, then systematically clarify 
 
 **Understanding the idea:**
 - Check out the current project state first (files, docs, recent commits)
-- Use `request_user_input` (if available) to ask 3-5 structured questions that clarify:
+- Use the question tool (see "Question Tool Priority" above) to ask 3-5 structured questions that clarify:
   - Purpose and user goals
   - Scope and constraints
   - Success criteria and acceptance
   - Integration points with existing features
 - Structure questions with multiple choice, numbered format, and fast-path options (e.g., "Reply: defaults" or "1a 2b 3c")
-- If `request_user_input` unavailable, state that briefly and ask the same questions directly in chat
 - Focus on understanding: purpose, constraints, success criteria, and why this matters now
 
 **⛔ Gate: Confirm understanding before proceeding**
 
-Do not move to design or implementation until you have confirmed:
-- The user's actual goal and why it matters now
-- What "done" looks like (acceptance criteria)
-- Key constraints and scope boundaries
+Do not move to design or implementation until you can answer all three:
+- **Goal + motivation:** What is the user trying to achieve, and why does it matter now? (Not just "add a feature" — what problem does it solve?)
+- **Done criteria:** What would the user check to know this is working correctly?
+- **Scope + constraints:** What is explicitly in or out, and what hard constraints apply?
 
-If any of these are unclear after the first round of questions, ask follow-up questions. Do not guess or assume.
+"Confirmed" means you can write a 2-sentence summary that the user would agree is correct — not just that they answered your questions. If their answers are vague ("make it better", "just make it work"), that counts as unclear — ask a follow-up that rephrases the question more concretely. Do not guess or assume.
+
+If two rounds of questions haven't resolved one of these three, surface the ambiguity explicitly: "I'm still unclear on [X]. Without knowing this, the design could go in very different directions. Can you give me a concrete example?"
+
+**Check for contradictions before exploring approaches:**
+Before proposing anything, scan the answers for internal conflicts — e.g., "minimal scope" but a constraint that forces large changes, or "fast delivery" but a quality bar that requires extensive testing. Surface any conflict explicitly: "Your answers point in two directions on [X] — which takes priority?" Resolve contradictions before moving on; don't paper over them in the design.
 
 **Exploring approaches:**
-- Based on answers, use `request_user_input` again if needed to explore technical direction:
+- Based on answers, use the question tool again if the technical direction is genuinely unclear (e.g., two architectures have meaningfully different tradeoffs). Skip this if the approach is already obvious from the answers.
   - Architecture patterns to consider
   - Performance/scalability vs complexity tradeoffs
   - Dependency and compatibility choices
-- Propose 2-3 different approaches with clear trade-offs
+- If there are meaningful tradeoffs, propose 2-3 different approaches with clear trade-offs; otherwise present one recommended approach and briefly note why alternatives were not chosen.
 - Present options conversationally with your recommendation and reasoning
 - Lead with your recommended option and explain why
 
 **Presenting the design:**
 - Once you believe you understand what you're building, present the design
-- Break it into sections of 200-300 words
-- Ask after each section whether it looks right so far (as follow-up, not requiring `request_user_input` unless multiple-choice validation needed)
-- Cover: architecture, components, data flow, error handling, testing, integration
+- Break it into small sections (typically 120-250 words; go longer only for complex sections), and ask after each section whether it looks right so far
+- **Scope the coverage to the task complexity.** Always cover architecture and data flow. Add components, error handling, testing, and integration only if they are genuinely non-obvious for the task at hand — don't cover all six for a simple feature.
+- If the user says a section is wrong, ask one targeted question to identify the divergence, then revise. If after two corrections a section still doesn't land, step back: "It sounds like we may have a different picture of [X] — can you describe what you had in mind?" Don't keep iterating on assumptions.
 - Be ready to go back and clarify if something doesn't make sense
 
 ## After the Design
@@ -77,18 +93,25 @@ If any of these are unclear after the first round of questions, ask follow-up qu
 
 ## Key Principles
 
-- **Use request_user_input strategically** - Batch 3-5 related questions to deepen understanding across multiple domains at once
+- **Use the question tool strategically** - Batch 3-5 related questions to deepen understanding across multiple domains at once
+- **Open-ended first, multiple-choice to confirm** - When the user hasn't formed an opinion yet, ask open-ended questions to discover intent. Once direction is clearer, switch to multiple-choice to efficiently pin down specifics.
 - **Structure for clarity** - Numbered questions, lettered options, default recommendations, compact reply format
-- **Multiple choice preferred** - Easier to answer than open-ended when possible
+- **Resolve contradictions before designing** - If answers conflict, surface the tension explicitly and resolve it before proposing anything
 - **YAGNI ruthlessly** - Remove unnecessary features from all designs
-- **Explore alternatives** - Always propose 2-3 approaches before settling
+- **Explore alternatives proportionally** - Provide multiple options when tradeoffs are real; avoid forced option lists when one direction is clearly dominant
 - **Incremental validation** - Present design in sections, validate each
 - **Be flexible** - Go back and clarify when something doesn't make sense
 - **Fast-path responses** - Example: "Reply: defaults" to accept all recommendations, or "1a 2c 3b" for specific choices
 
-## Request User Input Template
+## Escalation / De-escalation
 
-When using `request_user_input`, structure questions like this:
+- If the task turns out to be a simple, low-ambiguity change, don't force the full brainstorming process — wrap up quickly and proceed.
+- If this skill was entered from **ask-questions-if-underspecified** because two rounds of clarification weren't enough, treat the prior answers as context and start from the Gate check.
+- If you can confidently summarize Goal + Done + Scope/constraints in 2 sentences and there is only one practical implementation direction, de-escalate and proceed without forcing extra design loops.
+
+## Question Template
+
+When using the question tool, structure questions like this:
 
 ```
 1) What is the primary user goal?
