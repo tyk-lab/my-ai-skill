@@ -1,6 +1,7 @@
 ---
 name: code-reviewer
-description: Analyze code changes for security, performance, reliability, and architectural issues. Step 2 of 3 in the code review workflow: requesting-code-review (prepares scope) → code-reviewer (this skill) → receiving-code-review (handles feedback). Not for readability/style cleanup — use code-simplifier for that.
+description: >-
+  Analyze code changes for security, performance, reliability, and architectural issues. Step 2 of 3 in the code review workflow: requesting-code-review (prepares scope) -> code-reviewer (this skill) -> receiving-code-review (handles feedback). Not for readability/style cleanup - use code-simplifier for that.
 metadata:
   model: opus
 risk: unknown
