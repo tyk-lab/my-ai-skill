@@ -294,3 +294,11 @@ const isActive = computed(() => tabs?.activeTab.value === props.id);
 - [Svelte Component Documentation](https://svelte.dev/docs/svelte-components)
 - [Radix UI Primitives](https://www.radix-ui.com/primitives)
 - [shadcn/ui Components](https://ui.shadcn.com/)
+
+## Supporting References
+
+Detailed reference material in this directory:
+
+- **`references/component-patterns.md`** - In-depth composition patterns: compound components, render props, slots, HOC
+- **`references/css-styling-approaches.md`** - CSS-in-JS, CSS Modules, Tailwind strategy comparisons and trade-offs
+- **`references/accessibility-patterns.md`** - ARIA patterns, keyboard navigation, screen reader support

@@ -171,6 +171,10 @@ Latest Versions as of November 2025:
 - Tailwind CSS 3.4
 - Radix UI Latest
 
+## Supporting References
+
+- **`references/examples.md`** - Production-grade complete component examples (settings pages, dashboards, forms, etc.)
+
 ---
 
 Last Updated: 2026-02-27
