@@ -11,9 +11,9 @@ Help turn ideas into fully formed designs and specs through structured collabora
 
 Start by understanding the current project context, then systematically clarify requirements and design intent. Use the question tool to gather batches of related questions, deepening understanding before moving to design phases. Once you understand what you're building, present the design in small sections (120-250 words), checking after each section whether it looks right so far.
 
-## Question Tool Priority
+## Question Tool
 
-Use the first available: `AskUserQuestion` → `ask_user` → `request_user_input` → plain chat. Verify the tool exists before calling; some environments disable `request_user_input` outside Plan mode.
+If the current runtime supports interactive tools, pick any available tool suitable for collecting user input — common examples include `AskUserQuestion`, `ask_user`, `request_user_input`, `question`, and similar. Choose whichever one works; there is no required order. If none are available, ask the same questions directly in chat (plain text).
 
 ## When to Use
 
