@@ -1,6 +1,6 @@
 ---
 name: brainstorming
-description: "Explores user intent, requirements and design before implementation through structured questioning. Use for medium/high-complexity creative work: new features, significant component changes, or behavioral modifications that need design exploration. Not for simple clarification with 1-3 unknowns (use ask-questions-if-underspecified instead)."
+description: "TRIGGER when: user requests a new feature, significant architecture change, or complex multi-step task where scope/design/direction is unclear. Explores intent and requirements through structured questioning before implementation. SKIP for: bug fixes with clear steps, single-file changes, tasks with a detailed spec already provided, or simple clarification (use ask-questions-if-underspecified instead)."
 ---
 
 # Brainstorming Ideas Into Designs

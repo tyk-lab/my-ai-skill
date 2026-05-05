@@ -1,7 +1,7 @@
 ---
 name: code-reviewer
 description: >-
-  Analyze code changes for security, performance, reliability, and architectural issues. Step 2 of 3 in the code review workflow: requesting-code-review (prepares scope) -> code-reviewer (this skill) -> receiving-code-review (handles feedback). Not for readability/style cleanup - use code-simplifier for that.
+  TRIGGER when: significant code changes have been made (multiple files, new features, security-sensitive logic) and work is about to be declared complete. Analyzes for security, performance, reliability, and architectural issues. Step 2 of 3: requesting-code-review → code-reviewer (this) → receiving-code-review. SKIP for: readability/style cleanup (use code-simplifier), single-line fixes, or documentation-only changes.
 metadata:
   model: opus
 risk: unknown

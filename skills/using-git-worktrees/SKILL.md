@@ -1,6 +1,6 @@
 ---
 name: using-git-worktrees
-description: Create isolated git worktrees before executing multi-step implementation plans (from brainstorming, writing-plans, executing-plans, or subagent-driven-development). Not needed for single-file fixes, quick patches, or ad-hoc changes.
+description: "TRIGGER when: about to execute a multi-step implementation plan (from brainstorming, writing-plans, executing-plans, or subagent-driven-development). Creates isolated git worktrees so work stays clean and reversible. SKIP for: single-file fixes, quick patches, or ad-hoc one-off changes."
 ---
 
 # Using Git Worktrees
