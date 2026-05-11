@@ -1,6 +1,6 @@
 ---
 name: using-git-worktrees
-description: "TRIGGER when: about to execute a multi-step implementation plan (from brainstorming, writing-plans, executing-plans, or subagent-driven-development). Creates isolated git worktrees so work stays clean and reversible. SKIP for: single-file fixes, quick patches, or ad-hoc one-off changes."
+description: "TRIGGER only when user explicitly requests worktree isolation (e.g. 'use a worktree', 'isolate this work', 'set up a worktree'). Do NOT auto-trigger from executing-plans or brainstorming — wait for explicit user instruction. Creates isolated git worktrees so work stays clean and reversible. SKIP for: single-file fixes, quick patches, or ad-hoc one-off changes."
 ---
 
 # Using Git Worktrees
@@ -19,10 +19,17 @@ Follow this priority order:
 
 ### 1. Check Existing Directories
 
+Use the command that fits the current environment:
+
 ```bash
-# Check in priority order
+# POSIX
 ls -d .worktrees 2>/dev/null     # Preferred (hidden)
 ls -d worktrees 2>/dev/null      # Alternative
+```
+
+```powershell
+# PowerShell
+Test-Path .worktrees; Test-Path worktrees
 ```
 
 **If found:** Use that directory. If both exist, `.worktrees` wins.
@@ -32,12 +39,21 @@ ls -d worktrees 2>/dev/null      # Alternative
 Look for a worktree directory preference in any project or AI instruction file:
 
 ```bash
-# Common AI agent and project instruction files
+# POSIX
 for f in CLAUDE.md AGENTS.md .github/copilot-instructions.md \
          .cursorrules .windsurfrules .clinerules \
          .ai/instructions.md .instructions.md; do
   grep -i "worktree.*director" "$f" 2>/dev/null && break
 done
+```
+
+```powershell
+# PowerShell
+@('CLAUDE.md','AGENTS.md','.github/copilot-instructions.md',
+  '.cursorrules','.windsurfrules','.clinerules',
+  '.ai/instructions.md','.instructions.md') | ForEach-Object {
+  if (Test-Path $_) { Select-String -Path $_ -Pattern 'worktree.*director' -i }
+} | Select-Object -First 1
 ```
 
 **If preference specified:** Use it without asking.
@@ -215,11 +231,10 @@ Ready to implement auth feature
 
 ## Integration
 
-**Called by:**
-- **brainstorming** (Phase 4) - REQUIRED when design is approved and implementation follows
-- **subagent-driven-development** - REQUIRED before executing any tasks
-- **executing-plans** - REQUIRED before executing any tasks
-- Any skill needing isolated workspace
+**Called by (only on explicit user confirmation):**
+- **executing-plans** - triggers only if user confirms when asked
+- **brainstorming** / **subagent-driven-development** - same rule, ask user first
+- Any skill needing isolated workspace — always gate on user approval
 
 **Pairs with:**
 - **finishing-a-development-branch** - REQUIRED for cleanup after work complete

@@ -79,6 +79,6 @@ After all tasks complete and verified:
 ## Integration
 
 **Required workflow skills:**
-- **using-git-worktrees** - REQUIRED: Set up isolated workspace before starting
+- **using-git-worktrees** - OPTIONAL: If you want an isolated workspace, ask the user first — "Do you want me to set up a git worktree for this work?" — then trigger this skill only if they confirm. Do NOT auto-trigger it.
 - **writing-plans** - Creates the plan this skill executes
 - **finishing-a-development-branch** - Complete development after all tasks
