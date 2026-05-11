@@ -112,5 +112,6 @@ After saving the plan, offer execution choice:
 - Fresh subagent per task + code review
 
 **If Parallel Session chosen:**
-- Guide them to open new session in worktree
+- Ask user: "Do you want an isolated git worktree for this? If yes, say 'set up a worktree' before opening the new session."
+- Guide them to open new session (in worktree if they confirmed)
 - **REQUIRED SUB-SKILL:** New session uses executing-plans skill
