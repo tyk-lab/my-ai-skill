@@ -2,67 +2,66 @@
 
 ## Scoring Rubric
 
-### 1. Commands/Workflows (20 points)
+Total: 100 points across 8 criteria. Weights match SKILL.md assessment checklist.
 
-**20 points**: All essential commands documented with context
+### 1. Commands/Workflows (15 points)
+
+**15 points**: All essential commands documented with context
+
 - Build, test, lint, deploy commands present
 - Development workflow clear
 - Common operations documented
 
-**15 points**: Most commands present, some missing context
+**10 points**: Most commands present, some missing context
 
-**10 points**: Basic commands only, no workflow
-
-**5 points**: Few commands, many missing
+**5 points**: Basic commands only, no workflow
 
 **0 points**: No commands documented
 
-### 2. Architecture Clarity (20 points)
+### 2. Architecture Clarity (15 points)
 
-**20 points**: Clear codebase map
+**15 points**: Clear codebase map
+
 - Key directories explained
 - Module relationships documented
 - Entry points identified
 - Data flow described where relevant
 
-**15 points**: Good structure overview, minor gaps
+**10 points**: Good structure overview, minor gaps
 
-**10 points**: Basic directory listing only
-
-**5 points**: Vague or incomplete
+**5 points**: Basic directory listing only or vague
 
 **0 points**: No architecture info
 
-### 3. Non-Obvious Patterns (15 points)
+### 3. Non-Obvious Patterns (10 points)
 
-**15 points**: Gotchas and quirks captured
+**10 points**: Gotchas and quirks captured
+
 - Known issues documented
 - Workarounds explained
 - Edge cases noted
 - "Why we do it this way" for unusual patterns
 
-**10 points**: Some patterns documented
-
-**5 points**: Minimal pattern documentation
+**5 points**: Some patterns documented
 
 **0 points**: No patterns or gotchas
 
-### 4. Conciseness (15 points)
+### 4. Conciseness (10 points)
 
-**15 points**: Dense, valuable content
+**10 points**: Dense, valuable content
+
 - No filler or obvious info
 - Each line adds value
 - No redundancy with code comments
 
-**10 points**: Mostly concise, some padding
-
-**5 points**: Verbose in places
+**5 points**: Mostly concise, some padding or verbose sections
 
 **0 points**: Mostly filler or restates obvious code
 
 ### 5. Currency (15 points)
 
 **15 points**: Reflects current codebase
+
 - Commands work as documented
 - File references accurate
 - Tech stack current
@@ -76,6 +75,7 @@
 ### 6. Actionability (15 points)
 
 **15 points**: Instructions are executable
+
 - Commands can be copy-pasted
 - Steps are concrete
 - Paths are real
@@ -85,6 +85,26 @@
 **5 points**: Some vague instructions
 
 **0 points**: Vague or theoretical
+
+### 7. Leanness (10 points)
+
+**10 points**: No redundant, duplicate, or padded content
+
+- No rules repeated from parent/sibling files
+- No generic advice not specific to the project
+- File within recommended length
+
+**5 points**: Minor bloat or a few redundant rules
+
+**0 points**: Heavily bloated or duplicates many rules from sibling files
+
+### 8. Cross-File Alignment (10 points)
+
+**10 points**: No conflicts or duplications across sibling context files (or only one context file exists)
+
+**5 points**: Minor overlap or one conflicting rule
+
+**0 points**: Multiple conflicts or contradictory instructions across files
 
 ## Assessment Process
 

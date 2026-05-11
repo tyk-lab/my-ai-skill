@@ -26,20 +26,33 @@ Audit, evaluate, and improve AI project context files to ensure your AI coding a
 
 ### Phase 1: Discovery
 
-Find all AI context files in the repository:
+Find all AI context files in the repository. Use the command style that fits the current environment; the examples below are starting points, not a requirement to run Bash on every system.
 
 ```bash
+rg --files -g 'CLAUDE.md' -g '.claude.local.md' -g 'AGENTS.md' \
+  -g '.cursorrules' -g '.windsurfrules' \
+  -g '.github/copilot-instructions.md' -g '.cursor/rules/*.md' \
+  -g '!node_modules/**' -g '!.git/**' -g '!dist/**' -g '!build/**'
+
+# POSIX fallback
 find . \( \
   -name "CLAUDE.md" -o -name ".claude.local.md" \
   -o -name "AGENTS.md" \
   -o -name ".cursorrules" \
   -o -name ".windsurfrules" \
   -o -name "copilot-instructions.md" \
-\) 2>/dev/null | head -50
-# Also check .cursor/rules/ directory if it exists
+  -o -path "*/.cursor/rules/*.md" \
+\) -not -path "*/node_modules/*" -not -path "*/.git/*" 2>/dev/null
 ```
 
-Identify which tool(s) the project uses based on the files found and any tooling config in the repo (e.g., `.vscode/`, `opencode.json`, `.cursor/`). If multiple tools are used, process all their files.
+```powershell
+# PowerShell fallback
+Get-ChildItem -Recurse -Force -File -Include CLAUDE.md,.claude.local.md,AGENTS.md,.cursorrules,.windsurfrules,copilot-instructions.md |
+  Where-Object { $_.FullName -notmatch '\\(node_modules|\.git|dist|build)\\' }
+Get-ChildItem -Recurse -Force -File -Path .cursor/rules -Filter *.md -ErrorAction SilentlyContinue
+```
+
+If the user asks about global rules, or repo-level files appear to depend on global defaults, also inspect the supported global locations (`~/.claude/CLAUDE.md`, `~/.config/opencode/AGENTS.md`, `~/.cursor/rules/`) when accessible. Identify which tool(s) the project uses based on the files found and any tooling config in the repo (e.g., `.vscode/`, `opencode.json`, `.cursor/`). If multiple tools are used, process all their files.
 
 **File Types & Locations:**
 
@@ -57,21 +70,51 @@ For each context file found, evaluate against quality criteria. See [references/
 
 **Quick Assessment Checklist:**
 
-| Criterion | Weight | Check |
+| Criterion | Points | Check |
 |-----------|--------|-------|
-| Commands/workflows documented | High | Are build/test/deploy commands present? |
-| Architecture clarity | High | Can the AI understand the codebase structure? |
-| Non-obvious patterns | Medium | Are gotchas and quirks documented? |
-| Conciseness | Medium | No verbose explanations or obvious info? |
-| Currency | High | Does it reflect current codebase state? |
-| Actionability | High | Are instructions executable, not vague? |
+| Commands/workflows documented | 15 | Are build/test/deploy commands present? |
+| Architecture clarity | 15 | Can the AI understand the codebase structure? |
+| Non-obvious patterns | 10 | Are gotchas and quirks documented? |
+| Conciseness | 10 | No verbose explanations or obvious info? |
+| Currency | 15 | Does it reflect current codebase state? |
+| Actionability | 15 | Are instructions executable, not vague? |
+| Leanness | 10 | No redundant, duplicate, or padded content? |
+| Cross-file alignment | 10 | No conflicts or duplications across sibling context files? Use full credit when only one context file exists. |
 
 **Quality Scores:**
-- **A (90-100)**: Comprehensive, current, actionable
-- **B (70-89)**: Good coverage, minor gaps
-- **C (50-69)**: Basic info, missing key sections
-- **D (30-49)**: Sparse or outdated
-- **F (0-29)**: Missing or severely outdated
+- **A (90-100)**: Comprehensive, current, actionable, lean
+- **B (70-89)**: Good coverage, minor gaps or slight bloat
+- **C (50-69)**: Basic info, missing key sections or noticeable redundancy
+- **D (30-49)**: Sparse, outdated, or heavily bloated
+- **F (0-29)**: Missing or severely outdated/conflicted
+
+**Length Guidelines:**
+
+| File scope | Recommended length | Hard limit |
+|---|---|---|
+| Global user rules (`~/.claude/CLAUDE.md`) | 60–120 lines | 200 lines |
+| Project root (`CLAUDE.md` / `AGENTS.md`) | 80–150 lines | 250 lines |
+| Subdirectory / package-specific | 20–60 lines | 100 lines |
+
+If a file exceeds the hard limit, flag it and recommend splitting into focused sections or moving stable rules to a shared parent file.
+
+### Phase 2b: Cross-File Alignment Check
+
+When multiple context files are found (e.g., global CLAUDE.md + project AGENTS.md, or CLAUDE.md + .cursorrules), compare them for:
+
+1. **Duplicated rules** — same rule stated in multiple files verbatim or near-verbatim.
+   → Flag and recommend keeping it only in the most appropriate scope (global vs project).
+
+2. **Conflicting rules** — files that give contradictory instructions on the same topic (e.g., one says "always use tabs", another says "use 2-space indent").
+   → Flag the conflict explicitly; do not silently pick one.
+
+3. **Scope misplacement** — project-specific rules in global files, or user preference rules in shared project files.
+   → Recommend moving to the correct scope.
+
+4. **Coverage gaps introduced by split** — a rule exists in one tool's file but is missing from another tool's file for the same project.
+   → Flag only if the gap is likely to cause inconsistent AI behavior across tools.
+
+Output a dedicated **Cross-File Alignment** section in the quality report listing each issue with: which files are involved, what the conflict/duplicate is, and recommended resolution.
 
 ### Phase 3: Quality Report Output
 
@@ -95,12 +138,14 @@ Format:
 
 | Criterion | Score | Notes |
 |-----------|-------|-------|
-| Commands/workflows | X/20 | ... |
-| Architecture clarity | X/20 | ... |
-| Non-obvious patterns | X/15 | ... |
-| Conciseness | X/15 | ... |
+| Commands/workflows | X/15 | ... |
+| Architecture clarity | X/15 | ... |
+| Non-obvious patterns | X/10 | ... |
+| Conciseness | X/10 | ... |
 | Currency | X/15 | ... |
 | Actionability | X/15 | ... |
+| Leanness | X/10 | ... |
+| Cross-file alignment | X/10 | ... |
 
 **Issues:**
 - [List specific problems]
@@ -114,6 +159,15 @@ Format:
 After outputting the quality report, ask user for confirmation before updating.
 
 **Update Guidelines (Critical):**
+
+0. **Trim before adding** — if the file is at or above the recommended length, identify what to remove first before proposing any additions. Possible removals:
+   - Rules that are obvious or already enforced by the AI by default
+   - Duplicated rules that exist in a parent/sibling file
+   - Overly verbose explanations that can be compressed to one line
+   - Outdated sections that no longer reflect the codebase
+   Never add content that pushes the file past the hard limit without removing equivalent content.
+
+   **Prefer path references over inline content** — if any rule explanation, workflow description, or reference material exceeds ~5 lines, move it to a dedicated file (e.g., `.claude/commands.md`, `docs/architecture.md`) and replace with a one-line pointer: `See docs/architecture.md`. The context file should be a clean index of intent and pointers, not a documentation dump. Only inline what must be visible at a glance with no better home.
 
 1. **Propose targeted additions only** — focus on genuinely useful information:
    - Commands or workflows discovered during analysis
@@ -152,11 +206,18 @@ After outputting the quality report, ask user for confirmation before updating.
 
 ### Phase 5: Apply Updates
 
-After user approval, apply changes using the Edit tool. Preserve existing content structure.
+After user approval, apply changes using the current environment's available editing mechanism. Preserve existing content structure, then verify the write with a targeted file read, `git diff`, or `git status`.
 
 ## Templates
 
 See [references/templates.md](references/templates.md) for context file templates by project type.
+
+## Additional Resources
+
+- [references/quality-criteria.md](references/quality-criteria.md) — detailed scoring rubrics for the quality report.
+- [references/update-guidelines.md](references/update-guidelines.md) — stricter guidance for deciding what to add or remove.
+- [references/templates.md](references/templates.md) — starter templates by project type.
+- [commands/revise-ai-context-files.md](commands/revise-ai-context-files.md) — lightweight command workflow for updating context files with learnings from a completed session.
 
 ## Common Issues to Flag
 
@@ -166,6 +227,11 @@ See [references/templates.md](references/templates.md) for context file template
 4. **Missing environment setup**: Required env vars or config
 5. **Broken test commands**: Test scripts that have changed
 6. **Undocumented gotchas**: Non-obvious patterns not captured
+7. **File too long**: Exceeds recommended length; candidate sections for trimming or splitting
+8. **Duplicate rules**: Same rule repeated across multiple context files
+9. **Conflicting rules**: Different files give contradictory instructions on the same topic
+10. **Scope misplacement**: Project rules in global file, or personal preferences in shared file
+11. **Verbose rules**: A rule explained in 3+ lines that could be one line without loss of clarity
 
 ## Tips to Share with Users
 
