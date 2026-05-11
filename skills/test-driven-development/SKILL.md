@@ -1,6 +1,6 @@
 ---
 name: test-driven-development
-description: Use when implementing any feature or bugfix, before writing implementation code
+description: "Use when implementing any feature or bugfix, before writing implementation code. This is a coding practice, not a planning step — run alongside or after writing-plans, not instead of it. SKIP for: throwaway prototypes, generated code, or configuration-only changes."
 ---
 
 # Test-Driven Development (TDD)

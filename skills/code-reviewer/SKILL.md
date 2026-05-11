@@ -1,7 +1,7 @@
 ---
 name: code-reviewer
 description: >-
-  TRIGGER when: significant code changes have been made (multiple files, new features, security-sensitive logic) and work is about to be declared complete. Analyzes for security, performance, reliability, and architectural issues. SKIP for: readability/style cleanup (use code-simplifier), single-line fixes, or documentation-only changes.
+  TRIGGER when: significant code changes have been made (multiple files, new features, security-sensitive logic) and work is about to be declared complete. Run BEFORE verification-before-completion. Analyzes for security, performance, reliability, and architectural issues. SKIP for: readability/style cleanup (use code-simplifier), single-line fixes, or documentation-only changes.
 ---
 
 # Code Reviewer

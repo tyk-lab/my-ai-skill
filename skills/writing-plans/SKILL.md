@@ -1,6 +1,6 @@
 ---
 name: writing-plans
-description: "TRIGGER when: user has clear requirements for a multi-step implementation task and is ready to start coding. Must run before touching any code. SKIP for: single-file fixes, quick patches, or tasks already fully specced at step level."
+description: "TRIGGER when: user has clear requirements for a multi-step implementation task and is ready to start coding. Must run before touching any code. SKIP for: single-file fixes, quick patches, tasks already fully specced at step level, or direction/scope still unclear (use brainstorming instead)."
 ---
 
 # Writing Plans
