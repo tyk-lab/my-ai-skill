@@ -15,6 +15,26 @@ Start by understanding the current project context, then systematically clarify 
 
 If the current runtime supports interactive tools, pick any available tool suitable for collecting user input — common examples include `AskUserQuestion`, `ask_user`, `request_user_input`, `question`, and similar. Choose whichever one works; there is no required order. If none are available, ask the same questions directly in chat (plain text).
 
+**When using `AskUserQuestion`, the call must follow this exact structure** (missing `questions` array is the most common failure):
+
+```json
+{
+  "questions": [
+    {
+      "question": "Full question text ending with a question mark?",
+      "header": "Short label",
+      "multiSelect": false,
+      "options": [
+        { "label": "Option A", "description": "What this means" },
+        { "label": "Option B", "description": "What this means" }
+      ]
+    }
+  ]
+}
+```
+
+Rules: `questions` is a required array (wrap even a single question); `header` ≤ 12 chars; `options` needs 2–4 items each with `label` + `description`; `multiSelect` must be a boolean. If the tool call fails with a parameter error, fall back to asking the same questions in plain text — do not abort the skill.
+
 ## When to Use
 
 - New feature development requiring design decisions
