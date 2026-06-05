@@ -55,9 +55,10 @@ npx skills remove web-design-guidelines
 ### Codex（CLI / IDE 插件）
 
 - 扫描位置：仓库或用户目录的 `.agents\skills`（每个 skill 是一个文件夹，至少包含 `SKILL.md`）
+- 插件入口：本仓库也可通过 `.agents\plugins\marketplace.json` 管理本地 Codex 插件；插件目录位于 `.agents\plugins\plugins\<plugin-name>\`，Codex manifest 位于 `.codex-plugin\plugin.json`，插件内技能位于 `skills\`
 - 触发：显式（`/skills` 或 `$skill-name`）/ 隐式（按 `description` 自动）
 - 禁用：可在 `~/.codex/config.toml` 禁用某个 skill（不删除）
-- 排查：如果“装了但看不到”，确认 skill 文件夹在 `$HOME\.agents\skills\` 或仓库根目录 `.agents\skills\`，然后重启 Codex
+- 排查：如果“装了但看不到”，确认独立 skill 文件夹在 `$HOME\.agents\skills\` 或仓库根目录 `.agents\skills\`，或确认插件已出现在 `$HOME\.agents\plugins\marketplace.json`，然后重启 Codex
 
 参考：https://developers.openai.com/codex/skills/
 
@@ -65,6 +66,7 @@ npx skills remove web-design-guidelines
 
 - 多数情况下装好后自动可用；常见操作是重启/重新加载，让工具重新扫描 skills 目录
 - `skills` CLI 通常会放到各工具约定的目录，并支持 symlink（推荐）或 copy
+- Claude Code 插件 marketplace 位于 `.agents\plugins\.claude-plugin\marketplace.json`；插件自身 manifest 位于 `.agents\plugins\plugins\<plugin-name>\.claude-plugin\plugin.json`
 
 ## 更多 skills + 安全与遥测
 
