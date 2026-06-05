@@ -1,6 +1,6 @@
 ---
 name: brainstorming
-description: "TRIGGER when: user requests a new feature, significant architecture change, or complex multi-step task where scope/design/direction is unclear. Explores intent and requirements through structured questioning before implementation. SKIP for: bug fixes with clear steps, single-file changes, tasks with a detailed spec already provided, or simple clarification (use ask-questions-if-underspecified instead)."
+description: "TRIGGER when: user requests a new feature, significant architecture change, or complex multi-step task where scope/design/direction is unclear. Explores intent and requirements through structured questioning before implementation. SKIP for: bug fixes with clear steps, single-file changes, tasks with a detailed spec already provided, or minor ambiguity that a single clarifying question resolves."
 ---
 
 # Brainstorming Ideas Into Designs
@@ -44,7 +44,7 @@ Rules: `questions` is a required array (wrap even a single question); `header` �
 
 ## When NOT to Use
 
-- Simple/low-risk tasks with minor ambiguity → use ask-questions-if-underspecified instead
+- Simple/low-risk tasks with minor ambiguity → just ask one clarifying question and proceed
 - Bug fixes with clear reproduction steps
 - Tasks where the user provided a detailed spec or step-by-step instructions
 - Single-file, obvious changes (rename, typo fix, config tweak)
@@ -53,7 +53,7 @@ Rules: `questions` is a required array (wrap even a single question); `header` �
 
 **Understanding the idea:**
 - Check out the current project state first (files, docs, recent commits)
-- Use the question tool (see "Question Tool Priority" above) to ask 3-5 structured questions that clarify:
+- Use the question tool (see "Question Tool" above) to ask 3-5 structured questions that clarify:
   - Purpose and user goals
   - Scope and constraints
   - Success criteria and acceptance
@@ -99,9 +99,8 @@ Before proposing anything, scan the answers for internal conflicts — e.g., "mi
 - Commit the design document to git if user confirms
 
 **Implementation (if continuing):**
-- Ask: "Ready to set up for implementation?"
-- Use using-git-worktrees skill to create isolated workspace
-- Use writing-plans skill to create detailed implementation plan
+- Ask: "Ready to move on to implementation?"
+- Hand off the agreed design as the basis for planning and coding
 
 ## Key Principles
 
@@ -118,7 +117,7 @@ Before proposing anything, scan the answers for internal conflicts — e.g., "mi
 ## Escalation / De-escalation
 
 - If the task turns out to be a simple, low-ambiguity change, don't force the full brainstorming process — wrap up quickly and proceed.
-- If this skill was entered from **ask-questions-if-underspecified** because two rounds of clarification weren't enough, treat the prior answers as context and start from the Gate check.
+- If you entered this skill after a couple rounds of plain clarifying questions failed to resolve scope/design, treat the prior answers as context and start from the Gate check.
 - If you can confidently summarize Goal + Done + Scope/constraints in 2 sentences and there is only one practical implementation direction, de-escalate and proceed without forcing extra design loops.
 
 ## Question Template

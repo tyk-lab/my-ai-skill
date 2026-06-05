@@ -1,9 +1,11 @@
 ---
 name: verification-before-completion
-description: Use when about to claim work is complete, fixed, or passing, before committing or creating PRs. Run AFTER code-reviewer (if significant changes). Requires running verification commands and confirming output before making any success claims; evidence before assertions always.
+description: Use when about to claim work is complete, fixed, or passing, before committing or creating PRs. Requires running verification commands and confirming output before making any success claims; evidence before assertions always.
 ---
 
 # Verification Before Completion
+
+**Announce at start:** "I'm using the verification-before-completion skill to verify before claiming done."
 
 ## Overview
 
@@ -12,6 +14,8 @@ Claiming work is complete without verification is dishonesty, not efficiency.
 **Core principle:** Evidence before claims, always.
 
 **Violating the letter of this rule is violating the spirit of this rule.**
+
+Run AFTER any change or fix — this skill is the last gate before commit / PR / "done". For substantial changes, do a code review first, then verify here.
 
 ## The Iron Law
 
@@ -36,6 +40,30 @@ BEFORE claiming any status or expressing satisfaction:
 
 Skip any step = lying, not verifying
 ```
+
+## How To Run a Verification
+
+1. **List the claims** you're about to make (tests pass, builds, bug fixed, requirement met).
+2. **Map each claim to a command** that proves it. No command exists? Then you can't claim it — say so honestly.
+3. **Run the FULL command fresh** in this message. Not a subset, not a cached result, not a prior run.
+4. **Read the whole output**: exit code, failure count, error lines — not just the last line.
+5. **Quote the evidence** when you make the claim (command + key output line).
+
+If a command can't be run here (e.g. no environment, hardware-in-the-loop, manual QA), state explicitly what is **unverified** and the residual risk — never imply success.
+
+## Output Format
+
+Report verification as evidence, not adjectives:
+
+```
+## Verification
+- `<command>` → <key result, e.g. exit 0 / 34 passed, 0 failed>
+- `<command>` → <result>
+
+Unverified: <anything you could not run, + why + risk>
+```
+
+Then, and only then, state the completion claim.
 
 ## Common Failures
 
@@ -107,12 +135,12 @@ Skip any step = lying, not verifying
 
 ## Why This Matters
 
-From 24 failure memories:
-- your human partner said "I don't believe you" - trust broken
-- Undefined functions shipped - would crash
-- Missing requirements shipped - incomplete features
-- Time wasted on false completion → redirect → rework
-- Violates: "Honesty is a core value. If you lie, you'll be replaced."
+Skipping verification has concrete costs:
+- Trust breaks once the partner catches one false "done" — every later claim is then doubted.
+- Undefined functions / broken builds ship and crash downstream.
+- Missing requirements ship as silently incomplete features.
+- "Done" → redirect → rework wastes more time than verifying would have.
+- Honesty is a core value: an unverified success claim is a lie, even when well-intentioned.
 
 ## When To Apply
 

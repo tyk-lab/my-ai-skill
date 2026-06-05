@@ -1,7 +1,7 @@
 ---
 name: code-reviewer
 description: >-
-  TRIGGER when: significant code changes have been made (multiple files, new features, security-sensitive logic) and work is about to be declared complete. Run BEFORE verification-before-completion. Analyzes for security, performance, reliability, and architectural issues. SKIP for: readability/style cleanup (use code-simplifier), single-line fixes, or documentation-only changes.
+  TRIGGER when: significant code changes have been made (multiple files, new features, security-sensitive logic) and work is about to be declared complete. Analyzes for security, performance, reliability, and architectural issues. SKIP for: pure readability/style cleanup, single-line fixes, or documentation-only changes.
 ---
 
 # Code Reviewer
@@ -55,7 +55,7 @@ If no issues found, say so explicitly: "No issues found. Ready to merge."
 
 - **Critical issues found** → "Fix these before merging. Re-run review after."
 - **Warnings only** → "Safe to merge with awareness of these risks. Your call."
-- **Clean** → "Approved. Proceed with verification-before-completion."
+- **Clean** → "Approved. Proceed to final verification before declaring done."
 
 ## What to Prioritize
 
