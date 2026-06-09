@@ -52,7 +52,7 @@ Get-ChildItem -Recurse -Force -File -Include CLAUDE.md,.claude.local.md,AGENTS.m
 Get-ChildItem -Recurse -Force -File -Path .cursor/rules -Filter *.md -ErrorAction SilentlyContinue
 ```
 
-If the user asks about global rules, or repo-level files appear to depend on global defaults, also inspect the supported global locations (`~/.claude/CLAUDE.md`, `~/.config/opencode/AGENTS.md`, `~/.cursor/rules/`) when accessible. Identify which tool(s) the project uses based on the files found and any tooling config in the repo (e.g., `.vscode/`, `opencode.json`, `.cursor/`). If multiple tools are used, process all their files.
+Only process files found inside the repository. Do **not** inspect or read global user files (`~/.claude/CLAUDE.md`, `~/.config/opencode/AGENTS.md`, `~/.cursor/rules/`, etc.) unless the user explicitly asks to audit their global rules. Identify which tool(s) the project uses based on the files found and any tooling config in the repo (e.g., `.vscode/`, `opencode.json`, `.cursor/`). If multiple tools are used, process all their project-level files.
 
 **File Types & Locations:**
 
@@ -157,6 +157,8 @@ Format:
 ### Phase 4: Targeted Updates
 
 After outputting the quality report, ask user for confirmation before updating.
+
+> **Scope limit**: Only modify files inside the repository. Never write to global user files (`~/.claude/CLAUDE.md`, `~/.config/opencode/AGENTS.md`, `~/.cursor/rules/`, etc.) even if they were read at the user's explicit request.
 
 **Update Guidelines (Critical):**
 
