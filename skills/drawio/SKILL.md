@@ -1,11 +1,13 @@
 ---
 name: drawio
-description: Always use when user asks to create, generate, draw, or design a diagram, flowchart, architecture diagram, ER diagram, sequence diagram, class diagram, network diagram, mockup, wireframe, or UI sketch, or mentions draw.io, drawio, drawoi, .drawio files, or diagram export to PNG/SVG/PDF.
+description: Always use when user asks to create, generate, draw, or design a diagram, flowchart, architecture diagram, ER diagram, sequence diagram, class diagram, network diagram, mockup, wireframe, UI sketch, mind map, or 思维导图, or mentions draw.io, drawio, drawoi, MindMaster, EdrawMind, .drawio files, .emmx files, or diagram export to PNG/SVG/PDF.
 ---
 
 # Draw.io Diagram Skill
 
 Generate draw.io diagrams as native `.drawio` files. Optionally export to PNG, SVG, or PDF with the diagram XML embedded (so the exported file remains editable in draw.io).
+
+For native MindMaster / EdrawMind mind maps, generate `.emmx` files instead of `.drawio` files. Read [references/mindmaster.md](references/mindmaster.md) when the user asks for MindMaster, EdrawMind, `.emmx`, or a mind map / 思维导图 that should open in MindMaster.
 
 ## How to create a diagram
 
@@ -24,6 +26,8 @@ Check the user's request for a format preference. Examples:
 - `/drawio pdf architecture overview` → `architecture-overview.drawio.pdf`
 
 If no format is mentioned, just write the `.drawio` file and open it in draw.io. The user can always ask to export later.
+
+For mind maps, prefer `.emmx` when MindMaster is installed or the user asks for MindMaster/EdrawMind. Use `.drawio` only when the user specifically wants draw.io output or a non-mind-map diagram style.
 
 ### Supported export formats
 
