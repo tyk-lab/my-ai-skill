@@ -1,6 +1,6 @@
 ---
 name: explain
-description: "TRIGGER when: user asks to explain a concept/phenomenon/principle, asks 'why does X work', 'what is X', 'I don't understand X', or uses /explain. Covers math, physics, everyday phenomena. Delivers direct explanation with analogies, corrects misconceptions, suggests follow-ups. ALSO has opt-in PROJECT mode, 2 sub-modes: (1) GUIDED (`/explain --项目`/`/explain-project`, or '带我读懂这个代码库/陪我过一遍这个仓库/辅助我理解这个项目') walks user through repo interactively, anchored to file:line, writes no files; (2) ANALYSIS (`/explain --解析`, or '解析这个项目/分析这个项目结构/画出项目架构图') researches repo one-shot, produces drawio diagrams under `.project-analysis/`. For text overview/PROJECT_CONTEXT.md use project-context-snapshot instead. SKIP for: debugging, feature implementation, writing/editing files."
+description: "Explain concepts and why/how questions with intuitive analogies, misconception correction, and follow-up directions. Use for /explain, 'what is X', 'why does X', 'I don't understand X', and similar math/physics/everyday concept questions. Also supports explicit project modes: guided repo walkthrough via /explain --项目 or /explain-project, and one-shot project diagram analysis via /explain --解析 / '解析这个项目' / '画出项目架构图'. Skip bug fixing and feature implementation."
 ---
 
 # 概念与项目讲解助手
@@ -71,6 +71,7 @@ C. [对比/反例/边界情况]
 
 - **不等用户问完整问题**：如果用户只说了一个关键词（如"熵"、"虚数"、"共振"），直接开始解释，不要先问"你想了解哪个方面"
 - **先给答案，再问要不要深入**：不做苏格拉底式反问，除非用户明确想被引导推理
+- **保存产物位置**：概念模式默认不写文件；仅当用户明确要求保存图纸、图片、配图、脚本或演示代码时才落盘。图纸/图片/配图保存到当前任务主范围的 `_figures/`，脚本/演示代码保存到 `_scripts/`，目录不存在则创建；不要把这类产物直接保存到仓库根目录。同名文件已存在时，先确认再覆盖，或按用户要求改名保存。
 - **长度控制**：核心直觉 + 拆解不超过 300 字；延伸方向部分单独列出，不计入正文长度
 - **中文为主**：所有解释用简体中文；数学符号、物理量、代码保持原样
 - **不虚构**：不确定的内容标注 [推测] 或 [待验证]，不编造"权威来源"
@@ -233,25 +234,18 @@ C. 如果负负不得正，数学会坏在哪里
 
 ### 解析模式（一次性产出 drawio 图并落盘）
 
-触发见上文「触发与分档 → ② 解析模式」。本子模式 = **一次性探查项目，按 12 维为每个适用维度画一张 `.drawio` 图，保存到项目目录**。不写代码、不改项目其他文件，只在产出目录下落盘图。
-
-与引导模式区别：引导是多轮口头带读、不写文件；解析是一次性产出可保存的图。与 `project-context-snapshot` 区别：snapshot 产文本 `PROJECT_CONTEXT.md`，本模式产**可视化 `.drawio` 图**。
+触发见上文「触发与分档 → ② 解析模式」。本子模式只产出可保存的 `.drawio` 图，不写代码、不改项目其他文件；文本结构总览仍交给 `project-context-snapshot`。
 
 流程：
 
 1. **探查**：走上文 Step 0（定主范围、优先消费现成产物、轻量扫描、大仓库先问范围、读不到则降级说明）。范围或核心目标不清时先一句话确认再开画。
-2. **逐维判断 + 出图**：按「理解维度清单」12 维逐项判断适用性，**为每个适用维度生成一张 `.drawio` 图**；不适用的维度跳过，并在交付清单里写明理由（不静默跳过）。维度→图型映射见「图示化」（如主流程=流程图/时序图、状态机=状态图、模块边界=组件/架构图、数据流=DFD）。**表型维度**（#6 资源管理、#8 配置参数、#9 错误日志、#12 测试调试入口）没有自然图型，**用 drawio 的表格/列表节点呈现**（单独一张表格型 `.drawio`），不得因"只出图"而被判不适用跳过。
+2. **逐维判断 + 出图**：按「理解维度清单」12 维逐项判断适用性，一维一图；不适用的维度在交付清单写明理由。维度→图型映射见「图示化」；表型维度（#6 资源管理、#8 配置参数、#9 错误日志、#12 测试调试入口）用 drawio 表格/列表节点呈现，不因"只出图"跳过。
 3. **画图**：调用 `drawio` 技能生成图，节点锚真实模块/函数名，不确定处图注标 [推测]；`drawio` 仅支持打开/导出时，把其生成的 drawio XML 直接写入目标 `.drawio` 文件。
 4. **落盘**：保存到 **`<主范围>/.project-analysis/`**（monorepo 子项目则放子项目根；目录不存在则创建）。**创建目录或覆盖已有产物前先向用户确认**（写文件属落盘操作）。文件写入用 UTF-8 无 BOM、LF 换行。
 5. **命名**：按维度编号+名，与 12 维顺序一致，覆盖全 12 维，如 `01-主流程.drawio`、`02-状态机.drawio`、`03-核心调用链.drawio`、`04-模块边界.drawio`、`05-数据流.drawio`、`06-资源管理.drawio`、`07-并发访问.drawio`、`08-配置参数.drawio`、`09-错误日志.drawio`、`10-初始化顺序.drawio`、`11-异常冲突处理.drawio`、`12-测试调试入口.drawio`，便于排列检索。**必出一张 `00-总览.drawio`**：顶部用文本/列表节点写明**项目目的与目标**（为谁、解决什么问题、核心价值），以及**核心要点与关注方向**，下方串模块边界做全局地图——这是 Step 0「确立项目目的与目标」的落盘载体，不可省。
 6. **交付清单**：对话里给一句话汇总——**项目目的与目标 + 核心要点/方向**（复述 `00-总览` 的结论）、生成了哪些图、各对应哪维、哪些维度未涉及**及原因**、保存路径；不额外生成 Markdown 报告（按约定仅出 `.drawio` 图）。
 
-约定：
-
-- 只产出 `.drawio` 图，保存目录固定 `.project-analysis/`，放在主范围根。
-- 一维一图，不把多维塞进一张大图；表型维度用表格/列表节点的 `.drawio` 落地（见流程第 2 步），不跳过。
-- 12 维逐项判断，跳过的须在交付清单写明理由，避免表型维度被静默漏掉。
-- 同名产物已存在时，先确认再覆盖；不静默冲掉用户已有图。
+约定：保存目录固定为主范围根的 `.project-analysis/`；创建目录或覆盖同名产物前先确认；不把多维塞进一张大图；不额外生成 Markdown 报告。
 
 ### 收尾与项目模式约定
 
