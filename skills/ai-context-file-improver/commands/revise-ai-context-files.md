@@ -24,7 +24,8 @@ Use the command style that fits the current environment:
 ```bash
 # rg (preferred)
 rg --files -g 'CLAUDE.md' -g '.claude.local.md' -g 'AGENTS.md' \
-  -g '.cursorrules' -g '.windsurfrules' -g 'copilot-instructions.md' \
+  -g '.cursorrules' -g '.windsurfrules' -g '.github/copilot-instructions.md' \
+  -g '.cursor/rules/*.md' \
   -g '!node_modules/**' -g '!.git/**'
 
 # POSIX fallback
@@ -34,6 +35,7 @@ find . \( \
   -o -name ".cursorrules" \
   -o -name ".windsurfrules" \
   -o -name "copilot-instructions.md" \
+  -o -path "*/.cursor/rules/*.md" \
 \) -not -path "*/node_modules/*" -not -path "*/.git/*" 2>/dev/null
 ```
 
@@ -41,6 +43,11 @@ find . \( \
 # PowerShell fallback
 Get-ChildItem -Recurse -Force -File -Include CLAUDE.md,.claude.local.md,AGENTS.md,.cursorrules,.windsurfrules,copilot-instructions.md |
   Where-Object { $_.FullName -notmatch '\\(node_modules|\.git|dist|build)\\' }
+Get-ChildItem -Recurse -Force -File -Filter *.md |
+  Where-Object {
+    $_.FullName -match '[\\/]\.cursor[\\/]rules[\\/].+\.md$' -and
+    $_.FullName -notmatch '\\(node_modules|\.git|dist|build)\\'
+  }
 ```
 
 Decide where each addition belongs:
@@ -50,7 +57,7 @@ Decide where each addition belongs:
 
 ## Step 3: Draft Additions
 
-**Keep it concise** — one line per concept. Context files are part of the AI's prompt, so brevity matters.
+**Keep it concise** — one line per concept when possible. Context files are part of the AI's prompt, so brevity matters, but keep high-frequency operational rules inline when they are easier to follow that way.
 
 Format: `<command or pattern>` — `<brief description>`
 
@@ -59,6 +66,7 @@ Avoid:
 - Verbose explanations
 - Obvious information
 - One-off fixes unlikely to recur
+- Low-frequency background that belongs in a pointer file once it grows beyond ~5 lines
 
 ## Step 4: Show Proposed Changes
 

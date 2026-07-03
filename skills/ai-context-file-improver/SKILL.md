@@ -7,12 +7,12 @@ description: Audit and improve AI project context files across repositories. Use
 
 Audit, evaluate, and improve AI project context files to ensure your AI coding assistant has optimal project knowledge — regardless of which tool you use.
 
-**This skill can write to context files.** After presenting a quality report and getting user approval, it updates files with targeted improvements.
+**This skill can write to project-level context files inside the current repository.** After presenting a quality report and getting user approval, it updates files with targeted improvements. Global user files are audit-only unless a future version of this skill explicitly says otherwise.
 
 ## Supported File Types
 
-| Tool | Project-level | Global-level |
-|------|--------------|--------------|
+| Tool | Project-level | Global-level (audit-only) |
+|------|--------------|---------------------------|
 | Claude Code | `CLAUDE.md`, `.claude.local.md` | `~/.claude/CLAUDE.md` |
 | OpenCode | `AGENTS.md` | `~/.config/opencode/AGENTS.md` |
 | OpenAI Codex | `AGENTS.md` | — |
@@ -20,7 +20,7 @@ Audit, evaluate, and improve AI project context files to ensure your AI coding a
 | GitHub Copilot | `.github/copilot-instructions.md` | — |
 | Windsurf | `.windsurfrules` | — |
 
-> **Note:** OpenCode falls back to `CLAUDE.md` if `AGENTS.md` is absent. Prioritize `AGENTS.md` for new projects targeting OpenCode.
+> **Tool behavior note:** Loading rules and fallback behavior can change over time. Verify the current tool's official loading rules before recommending file consolidation, fallback assumptions, or migration steps.
 
 ## Workflow
 
@@ -49,10 +49,14 @@ find . \( \
 # PowerShell fallback
 Get-ChildItem -Recurse -Force -File -Include CLAUDE.md,.claude.local.md,AGENTS.md,.cursorrules,.windsurfrules,copilot-instructions.md |
   Where-Object { $_.FullName -notmatch '\\(node_modules|\.git|dist|build)\\' }
-Get-ChildItem -Recurse -Force -File -Path .cursor/rules -Filter *.md -ErrorAction SilentlyContinue
+Get-ChildItem -Recurse -Force -File -Filter *.md |
+  Where-Object {
+    $_.FullName -match '[\\/]\.cursor[\\/]rules[\\/].+\.md$' -and
+    $_.FullName -notmatch '\\(node_modules|\.git|dist|build)\\'
+  }
 ```
 
-Only process files found inside the repository. Do **not** inspect or read global user files (`~/.claude/CLAUDE.md`, `~/.config/opencode/AGENTS.md`, `~/.cursor/rules/`, etc.) unless the user explicitly asks to audit their global rules. Identify which tool(s) the project uses based on the files found and any tooling config in the repo (e.g., `.vscode/`, `opencode.json`, `.cursor/`). If multiple tools are used, process all their project-level files.
+Only process files found inside the repository by default. Do **not** inspect or read global user files (`~/.claude/CLAUDE.md`, `~/.config/opencode/AGENTS.md`, `~/.cursor/rules/`, etc.) unless the user explicitly asks to audit their global rules. When global files are included by explicit request, treat them as **audit-only**: you may compare them, score them, and recommend changes, but you must not modify them. Identify which tool(s) the project uses based on the files found and any tooling config in the repo (e.g., `.vscode/`, `opencode.json`, `.cursor/`). If multiple tools are used, process all their project-level files.
 
 **File Types & Locations:**
 
@@ -100,7 +104,7 @@ If a file exceeds the hard limit, flag it and recommend splitting into focused s
 
 ### Phase 2b: Cross-File Alignment Check
 
-When multiple context files are found (e.g., global CLAUDE.md + project AGENTS.md, or CLAUDE.md + .cursorrules), compare them for:
+When multiple context files are found (for example, multiple project-level files for different tools, or user-requested global files plus project files), compare them for:
 
 1. **Duplicated rules** — same rule stated in multiple files verbatim or near-verbatim.
    → Flag and recommend keeping it only in the most appropriate scope (global vs project).
@@ -130,6 +134,7 @@ Format:
 - Tools detected: X
 - Average score: X/100
 - Files needing update: X
+- Audit scope: repository-only | repository + user-requested global (audit-only)
 
 ### File-by-File Assessment
 
@@ -150,8 +155,13 @@ Format:
 **Issues:**
 - [List specific problems]
 
+**Evidence checked:**
+- [Command/path/section used to verify the issue]
+
 **Recommended additions:**
 - [List what should be added]
+
+**Priority:** High | Medium | Low
 ```
 
 ### Phase 4: Targeted Updates
@@ -169,7 +179,7 @@ After outputting the quality report, ask user for confirmation before updating.
    - Outdated sections that no longer reflect the codebase
    Never add content that pushes the file past the hard limit without removing equivalent content.
 
-   **Prefer path references over inline content** — if any rule explanation, workflow description, or reference material exceeds ~5 lines, move it to a dedicated file (e.g., `.claude/commands.md`, `docs/architecture.md`) and replace with a one-line pointer: `See docs/architecture.md`. The context file should be a clean index of intent and pointers, not a documentation dump. Only inline what must be visible at a glance with no better home.
+   **Prefer path references over inline content for low-frequency material** — if any rule explanation, workflow description, or reference material grows beyond ~5 lines, consider moving it to a dedicated file (e.g., `.claude/commands.md`, `docs/architecture.md`) and replace it with a one-line pointer such as `See docs/architecture.md`. Keep high-frequency operational rules inline when they are important to get right at a glance. The context file should stay focused, but it does not need to become a pointer-only index.
 
 1. **Propose targeted additions only** — focus on genuinely useful information:
    - Commands or workflows discovered during analysis
@@ -233,7 +243,7 @@ See [references/templates.md](references/templates.md) for context file template
 8. **Duplicate rules**: Same rule repeated across multiple context files
 9. **Conflicting rules**: Different files give contradictory instructions on the same topic
 10. **Scope misplacement**: Project rules in global file, or personal preferences in shared file
-11. **Verbose rules**: A rule explained in 3+ lines that could be one line without loss of clarity
+11. **Verbose rules**: A low-value rule explained in 5+ lines that could be one line or a pointer without loss of clarity
 
 ## Tips to Share with Users
 
@@ -242,7 +252,7 @@ When presenting recommendations, remind users:
 - **Keep it concise**: Context files should be human-readable; dense is better than verbose
 - **Actionable commands**: All documented commands should be copy-paste ready
 - **Local overrides**: Use tool-specific local files (for example, `.claude.local.md`) for personal preferences not shared with the team (add to `.gitignore`)
-- **Multi-tool projects**: If multiple AI tools are used, maintain separate context files — do not consolidate into one, as each tool has different syntax and loading behavior
+- **Multi-tool projects**: Verify each tool's current loading behavior before recommending one shared file, multiple thin adapter files, or a mixed strategy
 - **Review periodically**: Context files go stale as the codebase evolves; review after major refactors or dependency changes
 
 ## What Makes a Great Context File

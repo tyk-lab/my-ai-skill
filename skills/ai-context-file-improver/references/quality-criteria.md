@@ -113,10 +113,23 @@ Total: 100 points across 8 criteria. Weights match SKILL.md assessment checklist
    - Run documented commands (mentally or actually)
    - Check if referenced files exist
    - Verify architecture descriptions
-3. Score each criterion
-4. Calculate total and assign grade
-5. List specific issues found
-6. Propose concrete improvements
+3. Capture evidence for each material issue:
+   - File paths, section names, or commands checked
+   - Whether the issue is confirmed, likely, or uncertain
+4. Score each criterion
+5. Calculate total and assign grade
+6. List specific issues found with a priority:
+   - High: likely to mislead the AI or cause repeated mistakes
+   - Medium: useful to fix soon, but not usually session-breaking
+   - Low: polish, bloat reduction, or minor consistency cleanup
+7. Propose concrete improvements
+
+## Reporting Expectations
+
+- Scores are a summary, not the main deliverable
+- Every High-priority issue should cite evidence
+- If evidence is weak or indirect, label the recommendation as uncertain
+- Prefer "problem + evidence + impact + recommended fix" over score-only commentary
 
 ## Red Flags
 
