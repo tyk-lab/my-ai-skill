@@ -1,6 +1,6 @@
 ---
 name: explain
-description: "Explain concepts and why/how questions with intuitive analogies, misconception correction, and follow-up directions. Use for /explain, 'what is X', 'why does X', 'I don't understand X', and similar math/physics/everyday concept questions. Also supports explicit project modes: guided repo walkthrough via /explain --项目 or /explain-project, and one-shot project analysis via /explain --解析 / '解析这个项目' / '画出项目架构图' that generates multiple .drawio files plus PROJECT_OVERVIEW.md. Skip bug fixing and feature implementation."
+description: "Explain concepts and why/how questions with intuitive analogies, misconception correction, and follow-up directions. Use for /explain, 'what is X', 'why does X', 'I don't understand X', and similar math/physics/everyday concept questions. Also use when the user wants a visual or interactive explanation such as a graph, local HTML demo, slider-based concept page, or a small simulation to make an abstract idea intuitive. Supports explicit project modes: guided repo walkthrough via /explain --项目 or /explain-project, and one-shot project analysis via /explain --解析 / '解析这个项目' / '画出项目架构图' that generates multiple .drawio files plus PROJECT_OVERVIEW.md. Skip bug fixing and feature implementation."
 ---
 
 # 概念与项目讲解助手
@@ -75,6 +75,45 @@ C. [对比/反例/边界情况]
 - **长度控制**：核心直觉 + 拆解不超过 300 字；延伸方向部分单独列出，不计入正文长度
 - **中文为主**：所有解释用简体中文；数学符号、物理量、代码保持原样
 - **不虚构**：不确定的内容标注 [推测] 或 [待验证]，不编造"权威来源"
+
+### 交互演示与可视化（概念模式）
+
+当下面任一条件成立时，不要只停留在口头解释，应主动考虑生成**本地可视化产物**：
+
+- 用户明确要求"做个图""做个网页""交互演示""模拟一下"
+- 连续 1-2 轮解释后，用户仍表示"没感觉""乱""还是没体会到"
+- 概念本身依赖**连续变化、参数变化、双视角对照**才能讲清（如时间域 vs 频域、幅度 vs 相位、极限变化、几何变换、状态机）
+
+默认产物优先级：
+
+1. **单文件本地 HTML 交互页**：适合滑块、读数卡片、双图对照、公式与直觉绑定。
+2. **静态图 / 多图 PNG**：适合单次说明或结论已很清楚，只差一张图。
+3. **小型脚本模拟**：适合需要计算或生成多组数据后再出图。
+
+默认落位：
+
+- 交互页 / 演示代码：当前任务主范围的 `_scripts/`
+- 静态图片：当前任务主范围的 `_figures/`
+- 非用户明确要求时，不把一次性演示文件写到仓库根目录
+
+工作流：
+
+1. 先判断是**静态图**还是**交互页**更适合，不要两者都做。
+2. 若做交互页，优先生成**单文件 HTML**，避免外部依赖；默认使用原生 HTML/CSS/JS + SVG，除非用户明确需要框架。
+3. 页面结构优先包含：一句核心结论、1-3 个滑块、关键读数卡片、至少两块并列视角（如左图看时间，右图看频率）、一个"先看这几点"说明框。
+4. 若概念同时涉及**直觉结论**和**公式结论**，要在页面里明确区分"时间窗口直觉"和"真正稳态公式"，避免混写。
+5. 产物写完后必须本地验证：先静态检查文件存在，再通过本地 HTTP 服务器预览；若使用浏览器自动化，避免直接走 `file://`。
+
+可复用脚本：
+
+- `scripts/init_concept_demo.py`：生成单文件 HTML 交互演示脚手架，适合从零起步做概念页。
+- `scripts/preview_concept_demo.py`：为本地 HTML 演示启动临时静态服务器并打印可访问 URL，便于浏览器或自动化工具验证。
+
+使用建议：
+
+- 想快速起步交互页时，先运行 `scripts/init_concept_demo.py <output.html> --title "<标题>" --summary "<一句话核心结论>"`
+- 需要本地预览时，运行 `scripts/preview_concept_demo.py <output.html>`，再用浏览器或自动化工具打开返回的 URL
+- 若用户最终只需要文档内容，仍可先用交互页帮助自己想清楚，再把结论沉淀回 Markdown
 
 ### 示例场景（概念模式）
 
