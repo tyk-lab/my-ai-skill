@@ -3,31 +3,60 @@ name: drawio
 description: Always use when user asks to create, generate, draw, or design a diagram, flowchart, architecture diagram, ER diagram, sequence diagram, class diagram, network diagram, mockup, wireframe, UI sketch, mind map, or 思维导图, or mentions draw.io, drawio, drawoi, MindMaster, EdrawMind, .drawio files, .emmx files, or diagram export to PNG/SVG/PDF.
 ---
 
-# Draw.io Diagram Skill
+# Diagram Skill（EdrawMax First）
 
-Generate draw.io diagrams as native `.drawio` files. Optionally export to PNG, SVG, or PDF with the diagram XML embedded (so the exported file remains editable in draw.io).
+Generate diagrams with **EdrawMax first** when it is available locally. If EdrawMax is not available, fall back to native draw.io `.drawio` files. Optionally export draw.io output to PNG, SVG, or PDF with the diagram XML embedded (so the exported file remains editable in draw.io).
 
 For native MindMaster / EdrawMind mind maps, generate `.emmx` files instead of `.drawio` files. Read [references/mindmaster.md](references/mindmaster.md) when the user asks for MindMaster, EdrawMind, `.emmx`, or a mind map / 思维导图 that should open in MindMaster.
 
+Default backend choice:
+
+1. If the user explicitly asks for `draw.io`, `.drawio`, or a draw.io export format, use draw.io output.
+2. Otherwise, prefer **EdrawMax** and create an `.eddx` file when EdrawMax is installed.
+3. If EdrawMax is unavailable, fall back to draw.io `.drawio`.
+
 ## How to create a diagram
 
-1. **Generate draw.io XML** in mxGraphModel format for the requested diagram
-2. **Write the XML** to a `.drawio` file in the current working directory using the Write tool
-3. **If the user requested an export format** (png, svg, pdf), locate the draw.io CLI (see below), export with `--embed-diagram`, then delete the source `.drawio` file. If the CLI is not found, keep the `.drawio` file and tell the user they can install the draw.io desktop app to enable export, or open the `.drawio` file directly
-4. **Open the result** — the exported file if exported, or the `.drawio` file otherwise. If the open command fails, print the file path so the user can open it manually
+1. Decide the backend:
+   - **EdrawMax** when available and the user did not explicitly require draw.io
+   - **draw.io** when the user explicitly requested draw.io / `.drawio`, or when EdrawMax is unavailable
+2. **For EdrawMax**:
+   - Prefer creating an `.eddx` file in the current working directory
+   - Reuse a local EdrawMax template or empty `.eddx` package when needed
+   - Open the `.eddx` result in EdrawMax
+3. **For draw.io**:
+   - Generate draw.io XML in mxGraphModel format
+   - Write the XML to a `.drawio` file in the current working directory
+4. **If the user requested a draw.io export format** (png, svg, pdf), locate the draw.io CLI (see below), export with `--embed-diagram`, then delete the source `.drawio` file. If the CLI is not found, keep the `.drawio` file and tell the user they can install the draw.io desktop app to enable export, or open the `.drawio` file directly
+5. **Open the result** — the `.eddx` file for EdrawMax, or the exported/draw.io source file for draw.io. If the open command fails, print the file path so the user can open it manually
 
 ## Choosing the output format
 
 Check the user's request for a format preference. Examples:
 
-- `/drawio create a flowchart` → `flowchart.drawio`
+- `/drawio create a flowchart` → `flowchart.eddx` when EdrawMax exists, otherwise `flowchart.drawio`
 - `/drawio png flowchart for login` → `login-flow.drawio.png`
 - `/drawio svg: ER diagram` → `er-diagram.drawio.svg`
 - `/drawio pdf architecture overview` → `architecture-overview.drawio.pdf`
 
-If no format is mentioned, just write the `.drawio` file and open it in draw.io. The user can always ask to export later.
+If no format is mentioned, prefer `.eddx` when EdrawMax is available. The user can always ask for draw.io or export formats later.
 
 For mind maps, prefer `.emmx` when MindMaster is installed or the user asks for MindMaster/EdrawMind. Use `.drawio` only when the user specifically wants draw.io output or a non-mind-map diagram style.
+
+## EdrawMax availability
+
+Prefer the global command `edrawmax` when present on `PATH`.
+
+On Windows, also check these common locations:
+
+```powershell
+edrawmax
+"C:\Program Files\Edrawsoft\EdrawMax\EdrawMax.exe"
+```
+
+If the global command is missing but the default install path exists, use the executable directly.
+
+For this environment, `EdrawMax` should be treated as globally available once `edrawmax` exists on `PATH`.
 
 ### Supported export formats
 
@@ -122,6 +151,7 @@ Key flags:
 
 | Environment | Command |
 |-------------|---------|
+| Windows + EdrawMax | `edrawmax <file.eddx>` or `start <file.eddx>` |
 | macOS | `open <file>` |
 | Linux (native) | `xdg-open <file>` |
 | WSL2 | `cmd.exe /c start "" "$(wslpath -w <file>)"` |
@@ -136,6 +166,62 @@ Key flags:
 ```bash
 cmd.exe /c start "" "$(wslpath -w diagram.drawio)"
 ```
+
+## Connector hygiene（默认必须遵守）
+
+无论输出到 EdrawMax 还是 draw.io，默认都要把“连线可读性”当成一等约束，而不是最后再补救。
+
+### 1. 主流程优先走直线
+
+- 主链路默认按 **左→右** 或 **上→下** 单方向排布
+- 主流程节点尽量共线，避免主链路自己折返
+- 反馈、干扰、注释类边都不能破坏主链路的可读性
+
+### 2. 不同语义的线分层走
+
+- **主流程线**：走中轴，最短、最直
+- **反馈回线**：默认从主流程外侧绕回，优先走下方或上方整条边界，不穿主流程节点中间
+- **干扰输入**：默认从对象的侧面或底部接入，不和主流程共用同一段走线
+- **辅助说明线**：能不用就不用，优先放到节点文字里
+
+### 3. 出入口要明确
+
+遇到下面几种情况，不能只依赖自动连线，必须显式约束出入口或拐点：
+
+- 反馈线从右侧回到左侧
+- 干扰线、支路线接入主对象
+- 多条线同时靠近同一个节点
+- 自动路由明显造成“箭头看起来像反了”或“线穿过文字/节点”
+
+对 draw.io：
+
+- 优先给边设置明确的 `exitX/exitY/entryX/entryY`
+- 必要时在 `mxGeometry` 中增加少量 `mxPoint` 作为拐点
+- 反馈线默认从源节点底部或顶部离开，再回到目标节点底部或顶部
+
+对 EdrawMax：
+
+- 优先通过节点位置和连接方向避免交叉
+- 需要时调整连接点，使反馈、干扰从不同边接入
+
+### 4. 默认避让规则
+
+- 线不能穿过节点正文区域
+- 线不能压住箭头尖端或让箭头落在节点边缘歧义位置
+- 两条意义不同的线不要长距离平行贴合，避免视觉上看成一条
+- 回路线至少与主链路保持一层明显间距
+- 如果一个区域会有 3 条以上边汇入，优先增加一个小的汇聚/比较/接口节点，而不是硬连
+
+### 5. 生成后自查
+
+生成图后，至少快速检查这 4 件事：
+
+1. 箭头方向是否一眼可读
+2. 反馈线是否被误看成主流程的一部分
+3. 干扰线是否误接到错误节点边缘
+4. 是否存在“线压线”“线穿字”“线穿框”
+
+如果任一项不满足，先修布局或连接点，再交付，不把“等用户指出来再修”当正常流程。
 
 ## File naming
 
