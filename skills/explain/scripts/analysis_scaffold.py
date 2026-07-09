@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import html
+import re
 from pathlib import Path
 
 
@@ -30,6 +31,29 @@ OPTIONAL = [
     ("15-持久化与状态存储", "长期状态保存/加载、默认值、兼容、损坏恢复"),
 ]
 
+DOCS_REQUIRED = [
+    ("00-总览", "总入口、知识目标、推荐阅读顺序、最重要的理解主线"),
+    ("01-系统架构与模块边界", "主题目录、推导目录、脚本、演示、配图的职责边界，不是纯目录树"),
+    ("02-核心运行流程", "读者如何从总入口走到主题、推导、图示和演示验证"),
+    ("03-核心行为调用链", "最值得讲清的引用链，例如主题文档 → 推导文档 → _figures/_scripts/_demos"),
+    ("04-关键数据流与配置影响链", "公式、图片、脚本、演示、索引页之间如何互相支撑"),
+    ("05-构建测试与调试入口", "文档、配图、脚本、演示如何生成、预览、验证"),
+    ("06-外部接口与集成边界", "对读者暴露的入口、演示页、配图资产和外部编辑工具边界"),
+]
+
+NUMBERED_CONTENT_DIR = re.compile(r"^\d{2}_")
+DOCS_ENTRY_DOCS = {"00_阅读引导.md", "project_index.md"}
+DOCS_SUPPORT_DIRS = {"_scripts", "_demos", "_figures"}
+
+
+def detect_repo_kind(root: Path) -> str:
+    names = {path.name for path in root.iterdir()} if root.exists() else set()
+    if DOCS_ENTRY_DOCS & names:
+        return "docs-first"
+    if any(NUMBERED_CONTENT_DIR.match(name) for name in names) and DOCS_SUPPORT_DIRS & names:
+        return "docs-first"
+    return "code-first"
+
 
 def drawio_xml(title: str, prompt: str) -> str:
     value = html.escape(f"{title}\n\n待补充: {prompt}\n证据: file:line\n状态: [需深挖]")
@@ -49,15 +73,38 @@ def drawio_xml(title: str, prompt: str) -> str:
 """
 
 
-def overview_md(files: list[tuple[str, str]]) -> str:
+def overview_md(files: list[tuple[str, str]], repo_kind: str) -> str:
+    purpose_heading = "## Project Purpose And Core Direction"
+    structure_heading = "## Core Structure"
+    notes = "- [待补充] 项目目的、核心价值、理解主线。"
+    extra_sections: list[str] = []
+    if repo_kind == "docs-first":
+        purpose_heading = "## Knowledge Goal And Reading Direction"
+        structure_heading = "## Knowledge Structure"
+        notes = "- [待补充] 总入口、主题分层、公式推导层、演示验证路径。"
+        extra_sections = [
+            "",
+            "## Reading Paths",
+            "",
+            "- [待补充] 从总入口到主题、推导、演示的推荐顺序。",
+            "",
+            "## Theme / Derivation / Demo Links",
+            "",
+            "- [待补充] 主题文档、推导文档、脚本、演示、配图之间的引用关系。",
+        ]
+
     lines = [
         "# Project Overview",
         "",
         "> Generated scaffold. Replace placeholders with code-backed conclusions.",
         "",
-        "## Project Purpose And Core Direction",
+        purpose_heading,
         "",
-        "- [待补充] 项目目的、核心价值、理解主线。",
+        notes,
+        "",
+        structure_heading,
+        "",
+        "- [待补充] 核心分层、目录职责、主要入口。",
         "",
         "## Drawio Files",
         "",
@@ -66,6 +113,8 @@ def overview_md(files: list[tuple[str, str]]) -> str:
         lines.append(f"- `{title}.drawio`: {prompt}")
     lines.extend(
         [
+            *extra_sections,
+            "",
             "",
             "## Evidence And Unknowns",
             "",
@@ -85,11 +134,13 @@ def main() -> int:
 
     root = Path(args.root).resolve()
     out_dir = root / ".project-analysis"
-    files = REQUIRED + (OPTIONAL if args.include_optional else [])
+    repo_kind = detect_repo_kind(root)
+    required = DOCS_REQUIRED if repo_kind == "docs-first" else REQUIRED
+    files = required + (OPTIONAL if args.include_optional else [])
     planned = [out_dir / f"{title}.drawio" for title, _ in files] + [out_dir / "PROJECT_OVERVIEW.md"]
 
     if not args.write:
-        print("Dry run. Re-run with --write after user confirmation.")
+        print(f"Dry run. Repo kind: {repo_kind}. Re-run with --write after user confirmation.")
         for path in planned:
             print(path)
         return 0
@@ -104,7 +155,7 @@ def main() -> int:
     out_dir.mkdir(parents=True, exist_ok=True)
     for title, prompt in files:
         (out_dir / f"{title}.drawio").write_text(drawio_xml(title, prompt), encoding="utf-8", newline="\n")
-    (out_dir / "PROJECT_OVERVIEW.md").write_text(overview_md(files), encoding="utf-8", newline="\n")
+    (out_dir / "PROJECT_OVERVIEW.md").write_text(overview_md(files, repo_kind), encoding="utf-8", newline="\n")
     for path in planned:
         print(path)
     return 0

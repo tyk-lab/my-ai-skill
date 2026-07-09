@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import subprocess
 from collections import Counter
 from pathlib import Path
@@ -30,7 +31,11 @@ CONTEXT_NAMES = {
     "README",
     "AGENTS.md",
     "CLAUDE.md",
+    "00_阅读引导.md",
 }
+
+NUMBERED_CONTENT_DIR = re.compile(r"^\d{2}_")
+SUPPORT_DIRS = ("_scripts", "_demos", "_figures")
 
 EXT_LANG = {
     ".c": "C",
@@ -71,7 +76,7 @@ def run_git(root: Path, args: list[str]) -> tuple[int, str]:
 
 
 def git_files(root: Path) -> list[str] | None:
-    code, out = run_git(root, ["ls-files"])
+    code, out = run_git(root, ["-c", "core.quotepath=false", "ls-files", "--cached", "--others", "--exclude-standard"])
     if code != 0:
         return None
     return [line for line in out.splitlines() if line]
@@ -112,12 +117,24 @@ def collect(root: Path) -> dict:
     recent_lines = recent.splitlines() if code == 0 and recent else []
 
     top_dirs = Counter(Path(f).parts[0] if Path(f).parts else "." for f in files)
+    root_dir_names = {path.name for path in root.iterdir() if path.is_dir()}
+    numbered_dirs = sorted(name for name in root_dir_names if NUMBERED_CONTENT_DIR.match(name))
+    support_dirs = [name for name in SUPPORT_DIRS if name in root_dir_names]
+    entry_docs = [f for f in files if Path(f).name in {"00_阅读引导.md", "README.md", "README", "project_index.md"}]
+
+    repo_shape = "code-first"
+    if "00_阅读引导.md" in {Path(f).name for f in files} or (numbered_dirs and support_dirs):
+        repo_shape = "docs-first"
 
     return {
         "root": str(root),
+        "repo_shape": repo_shape,
         "file_source": source,
         "file_count": len(files),
         "top_directories": top_dirs.most_common(20),
+        "entry_docs": entry_docs[:20],
+        "numbered_content_dirs": numbered_dirs[:20],
+        "support_dirs": support_dirs,
         "languages": lang_counts.most_common(20),
         "manifests": manifests[:50],
         "context_docs": context_docs[:80],
@@ -128,7 +145,17 @@ def collect(root: Path) -> dict:
 
 def print_markdown(data: dict) -> None:
     print(f"# Project Probe\n\nRoot: `{data['root']}`")
+    print(f"\nRepo shape: `{data['repo_shape']}`")
     print(f"\nFiles: {data['file_count']} ({data['file_source']})")
+    print("\n## Entry Docs")
+    for item in data["entry_docs"] or ["[none found]"]:
+        print(f"- `{item}`")
+    print("\n## Numbered Content Directories")
+    for item in data["numbered_content_dirs"] or ["[none found]"]:
+        print(f"- `{item}`")
+    print("\n## Support Directories")
+    for item in data["support_dirs"] or ["[none found]"]:
+        print(f"- `{item}`")
     print("\n## Languages")
     for name, count in data["languages"]:
         print(f"- {name}: {count}")
