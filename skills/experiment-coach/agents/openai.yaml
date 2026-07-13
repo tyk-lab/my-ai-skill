@@ -1,0 +1,7 @@
+interface:
+  display_name: "实验阶段教练"
+  short_description: "从概念和结果出发，引导实验探索、工程权衡与应用验证"
+  default_prompt: "使用 $experiment-coach 从我已有的概念或结果出发，规划实验并逐步连接真实工程问题与应用。"
+
+policy:
+  allow_implicit_invocation: false

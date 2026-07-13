@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Create project-analysis drawio and overview scaffolds after confirmation."""
+"""Create profile-aware drawio scaffolds after confirmation."""
 
 from __future__ import annotations
 
@@ -9,50 +9,79 @@ import re
 from pathlib import Path
 
 
-REQUIRED = [
-    ("00-总览", "项目目的、核心价值、技术栈、构建/运行入口、理解主线"),
-    ("01-系统架构与模块边界", "核心模块、职责边界、依赖方向、入口/出口、跨模块协作"),
-    ("02-核心运行流程", "从启动/入口到核心业务闭环的流程"),
-    ("03-核心行为调用链", "1-3 条代表核心行为的调用链，不是全量调用图"),
-    ("04-关键数据流与配置影响链", "核心数据、配置项、宏/参数如何进入系统并影响行为"),
-    ("05-构建测试与调试入口", "构建环境、测试入口、调试入口、关键命令及来源"),
-    ("06-外部接口与集成边界", "外部系统、硬件、协议、文件、API、UI 或用户操作的边界"),
+COMMON_REQUIRED = [
+    ("00-核心认知与阅读地图", "项目目的、核心价值、领域对象、核心要点、关键约束和阅读主线"),
+    ("01-软件工程总体框架", "静态职责、动态协作、数据状态、资源、平台与外部边界"),
+    ("02-构建启动与运行生命周期", "从源码和配置到产物、启动、稳态运行、停止或重启"),
+    ("03-端到端核心主线", "1-3 条代表性输入到输出或反馈闭环"),
+    ("04-核心行为与调用链", "主线上的真实函数、组件、任务或处理器调用"),
+    ("05-数据配置与状态", "配置来源、数据转换、运行状态、持久化、缓存及恢复"),
+    ("06-执行模型时间与并发", "执行上下文、调度、时间机制、共享状态和竞态边界"),
+    ("07-资源所有权与生命周期", "资源分配或注册、所有者、访问者、停用或释放、冲突和恢复"),
+    ("08-外部接口与集成边界", "用户、硬件、协议、API、文件、存储、消息或第三方契约"),
+    ("09-故障安全诊断与恢复", "错误检测、传播、诊断、安全保护、降级、回退和恢复"),
+    ("10-构建测试调试与演进", "构建矩阵、测试层次、调试观测、发布、扩展点和修改影响"),
+]
+
+EMBEDDED_REQUIRED = [
+    ("11-中断DMA与实时执行", "中断源、优先级、屏蔽、DMA、ISR 交接、注册和停用"),
+    ("12-MCU时钟时间与调度", "时钟树、Tick、硬件 Timer、软件超时、周期任务和溢出"),
+    ("13-内存布局与管理", "Flash/RAM、静态区、栈、堆、固定缓冲区、DMA、缓存和容量"),
+    ("14-外设资源所有权与冲突", "Pin mux、外设、IRQ/DMA 通道的占用、复用、释放和冲突检查"),
+    ("15-芯片板级与安全约束", "HAL、芯片板卡差异、寄存器、电气时序、看门狗和危险输出"),
+]
+
+GENERAL_REQUIRED = [
+    ("11-进程线程异步与任务生命周期", "进程线程、请求、事件循环、任务、取消、超时和共享状态"),
+    ("12-存储事务缓存与一致性", "数据库、文件、缓存、消息、事务、一致性、幂等和恢复"),
+    ("13-运行资源池与生命周期", "连接池、线程池、句柄、会话、缓存和外部客户端生命周期"),
+    ("14-部署观测与运行安全", "配置密钥、部署、健康检查、日志指标追踪、授权和故障隔离"),
 ]
 
 OPTIONAL = [
-    ("07-状态机与生命周期", "状态集合、触发条件、迁移、退出/恢复路径"),
-    ("08-资源生命周期管理", "资源申请、持有、释放与所有权"),
-    ("09-并发访问", "共享状态、锁/原子/临界区、竞态风险"),
-    ("10-错误传播、日志与诊断", "错误来源、传播路径、日志入口、诊断手段"),
-    ("11-初始化顺序", "启动、配置加载、模块注册、硬件/外部服务初始化顺序"),
-    ("12-异常处理与恢复策略", "异常检测、冲突、边界输入、失败回退、恢复策略"),
-    ("13-领域约束与平台适配", "领域硬约束与平台差异"),
-    ("14-安全约束与风险边界", "授权、危险操作、防误用、安全边界、高风险路径"),
-    ("15-持久化与状态存储", "长期状态保存/加载、默认值、兼容、损坏恢复"),
+    ("16-关键状态机与生命周期", "对核心目标有决定作用的状态、迁移、退出和恢复路径"),
+    ("17-关键算法与领域原理", "决定核心行为的算法、公式、协议或领域约束"),
+    ("18-性能容量与边界", "实时预算、吞吐、延迟、容量、退化点和测量方式"),
 ]
 
 DOCS_REQUIRED = [
-    ("00-总览", "总入口、知识目标、推荐阅读顺序、最重要的理解主线"),
-    ("01-系统架构与模块边界", "主题目录、推导目录、脚本、演示、配图的职责边界，不是纯目录树"),
-    ("02-核心运行流程", "读者如何从总入口走到主题、推导、图示和演示验证"),
-    ("03-核心行为调用链", "最值得讲清的引用链，例如主题文档 → 推导文档 → _figures/_scripts/_demos"),
-    ("04-关键数据流与配置影响链", "公式、图片、脚本、演示、索引页之间如何互相支撑"),
-    ("05-构建测试与调试入口", "文档、配图、脚本、演示如何生成、预览、验证"),
-    ("06-外部接口与集成边界", "对读者暴露的入口、演示页、配图资产和外部编辑工具边界"),
+    ("00-核心认知与阅读地图", "知识目标、核心要点、关键约束和推荐阅读主线"),
+    ("01-知识框架与职责分层", "主题、推导、脚本、演示和配图的职责边界"),
+    ("02-推荐阅读与学习主线", "从总入口到主题、推导、图示和演示验证"),
+    ("03-主题推导演示引用链", "主题、推导、脚本、配图和演示的真实引用关系"),
+    ("04-内容生成验证与维护", "内容和资产如何生成、预览、验证、更新及演进"),
+    ("05-读者入口与外部工具边界", "读者入口、交互演示、配图资产和外部编辑工具"),
 ]
 
 NUMBERED_CONTENT_DIR = re.compile(r"^\d{2}_")
-DOCS_ENTRY_DOCS = {"00_阅读引导.md", "project_index.md"}
+DOCS_ENTRY_DOCS = {"00_阅读引导.md"}
 DOCS_SUPPORT_DIRS = {"_scripts", "_demos", "_figures"}
 
 
-def detect_repo_kind(root: Path) -> str:
+def detect_profile(root: Path) -> str:
     names = {path.name for path in root.iterdir()} if root.exists() else set()
     if DOCS_ENTRY_DOCS & names:
-        return "docs-first"
+        return "docs"
     if any(NUMBERED_CONTENT_DIR.match(name) for name in names) and DOCS_SUPPORT_DIRS & names:
-        return "docs-first"
-    return "code-first"
+        return "docs"
+
+    embedded_markers = {
+        "platformio.ini",
+        "sdkconfig",
+        "zephyr",
+        "boards",
+        "variants",
+        "firmware",
+    }
+    if embedded_markers & {name.lower() for name in names}:
+        return "embedded"
+    ino_patterns = ("*.ino", "*/*.ino", "*/*/*.ino")
+    if any(any(root.glob(pattern)) for pattern in ino_patterns):
+        return "embedded"
+    hal_paths = (root / "HAL", root / "src" / "HAL", root / "Marlin" / "src" / "HAL")
+    if any(path.is_dir() for path in hal_paths):
+        return "embedded"
+    return "general"
 
 
 def drawio_xml(title: str, prompt: str) -> str:
@@ -73,76 +102,40 @@ def drawio_xml(title: str, prompt: str) -> str:
 """
 
 
-def overview_md(files: list[tuple[str, str]], repo_kind: str) -> str:
-    purpose_heading = "## Project Purpose And Core Direction"
-    structure_heading = "## Core Structure"
-    notes = "- [待补充] 项目目的、核心价值、理解主线。"
-    extra_sections: list[str] = []
-    if repo_kind == "docs-first":
-        purpose_heading = "## Knowledge Goal And Reading Direction"
-        structure_heading = "## Knowledge Structure"
-        notes = "- [待补充] 总入口、主题分层、公式推导层、演示验证路径。"
-        extra_sections = [
-            "",
-            "## Reading Paths",
-            "",
-            "- [待补充] 从总入口到主题、推导、演示的推荐顺序。",
-            "",
-            "## Theme / Derivation / Demo Links",
-            "",
-            "- [待补充] 主题文档、推导文档、脚本、演示、配图之间的引用关系。",
-        ]
-
-    lines = [
-        "# Project Overview",
-        "",
-        "> Generated scaffold. Replace placeholders with code-backed conclusions.",
-        "",
-        purpose_heading,
-        "",
-        notes,
-        "",
-        structure_heading,
-        "",
-        "- [待补充] 核心分层、目录职责、主要入口。",
-        "",
-        "## Drawio Files",
-        "",
-    ]
-    for title, prompt in files:
-        lines.append(f"- `{title}.drawio`: {prompt}")
-    lines.extend(
-        [
-            *extra_sections,
-            "",
-            "",
-            "## Evidence And Unknowns",
-            "",
-            "- [待补充] 已读来源、未读范围、关键 `file:line` 证据。",
-        ]
-    )
-    return "\n".join(lines) + "\n"
-
-
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("root", nargs="?", default=".", help="Project root.")
-    parser.add_argument("--include-optional", action="store_true", help="Also scaffold optional analysis files.")
+    parser.add_argument(
+        "--profile",
+        choices=("auto", "embedded", "general", "docs"),
+        default="auto",
+        help="Analysis profile. Auto-detect by default.",
+    )
+    parser.add_argument(
+        "--include-optional",
+        action="store_true",
+        help="Also scaffold optional analysis files for embedded/general profiles.",
+    )
     parser.add_argument("--write", action="store_true", help="Actually write files. Without this, only prints the plan.")
     parser.add_argument("--force", action="store_true", help="Allow overwriting existing scaffold files after explicit confirmation.")
     args = parser.parse_args()
 
     root = Path(args.root).resolve()
     out_dir = root / ".project-analysis"
-    repo_kind = detect_repo_kind(root)
-    required = DOCS_REQUIRED if repo_kind == "docs-first" else REQUIRED
-    files = required + (OPTIONAL if args.include_optional else [])
-    planned = [out_dir / f"{title}.drawio" for title, _ in files] + [out_dir / "PROJECT_OVERVIEW.md"]
+    profile = detect_profile(root) if args.profile == "auto" else args.profile
+    required = {
+        "embedded": COMMON_REQUIRED + EMBEDDED_REQUIRED,
+        "general": COMMON_REQUIRED + GENERAL_REQUIRED,
+        "docs": DOCS_REQUIRED,
+    }[profile]
+    files = required + (OPTIONAL if args.include_optional and profile != "docs" else [])
+    planned = [out_dir / f"{title}.drawio" for title, _ in files]
 
     if not args.write:
-        print(f"Dry run. Repo kind: {repo_kind}. Re-run with --write after user confirmation.")
+        print(f"Dry run. Analysis profile: {profile}. Re-run with --write after user confirmation.")
         for path in planned:
             print(path)
+        print("Then complete the diagrams and write .project-analysis/PROJECT_ANALYSIS.md from their actual content.")
         return 0
 
     existing = [path for path in planned if path.exists()]
@@ -155,9 +148,9 @@ def main() -> int:
     out_dir.mkdir(parents=True, exist_ok=True)
     for title, prompt in files:
         (out_dir / f"{title}.drawio").write_text(drawio_xml(title, prompt), encoding="utf-8", newline="\n")
-    (out_dir / "PROJECT_OVERVIEW.md").write_text(overview_md(files, repo_kind), encoding="utf-8", newline="\n")
     for path in planned:
         print(path)
+    print("After completing and verifying all diagrams, write .project-analysis/PROJECT_ANALYSIS.md from their actual content.")
     return 0
 
 
