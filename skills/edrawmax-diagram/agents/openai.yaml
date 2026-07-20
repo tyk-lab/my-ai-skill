@@ -1,0 +1,7 @@
+interface:
+  display_name: "EdrawMax 图表设计"
+  short_description: "优先用 EdrawMax 创建、验证并导出可编辑图表"
+  default_prompt: "使用 $edrawmax-diagram 创建结构清晰、连线可读且经过验证的可编辑图表。"
+
+policy:
+  allow_implicit_invocation: true

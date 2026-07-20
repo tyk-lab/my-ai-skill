@@ -3,6 +3,7 @@ param(
   [string[]]$Branch = @("Research", "Plan", "Build", "Review"),
   [string]$Output = (Join-Path (Get-Location) "mindmaster-map.emmx"),
   [string]$Template = "",
+  [switch]$Force,
   [switch]$Open
 )
 
@@ -131,11 +132,25 @@ if ($branches.Count -eq 0) {
   throw "At least one branch is required."
 }
 
+if ($branches.Count -gt 12) {
+  throw "At most 12 branches are supported by this layout."
+}
+
 $outputPath = [IO.Path]::GetFullPath($Output)
+if ([IO.Path]::GetExtension($outputPath) -ine ".emmx") {
+  throw "Output must use the .emmx extension: $outputPath"
+}
+
+if ((Test-Path -LiteralPath $outputPath) -and -not $Force) {
+  throw "Output already exists. Pass -Force only when overwriting is intended: $outputPath"
+}
+
 $outputDir = Split-Path -Parent $outputPath
 if ($outputDir -and -not (Test-Path -LiteralPath $outputDir)) {
   New-Item -ItemType Directory -Force -Path $outputDir | Out-Null
 }
+
+$temporaryPath = Join-Path $outputDir (".{0}.{1}.tmp" -f [IO.Path]::GetFileName($outputPath), [guid]::NewGuid().ToString("N"))
 
 $topicIds = New-Object System.Collections.Generic.List[string]
 $shapes = New-Object System.Collections.Generic.List[string]
@@ -207,15 +222,14 @@ $pageXml = @"
 "@
 
 Add-Type -AssemblyName System.IO.Compression.FileSystem
-if (Test-Path -LiteralPath $outputPath) {
-  Remove-Item -LiteralPath $outputPath -Force
-}
-
-$templateZip = [IO.Compression.ZipFile]::OpenRead($resolvedTemplate)
-$targetZip = [IO.Compression.ZipFile]::Open($outputPath, [IO.Compression.ZipArchiveMode]::Create)
+$templateZip = $null
+$targetZip = $null
 $utf8NoBom = [Text.UTF8Encoding]::new($false)
 
 try {
+  $templateZip = [IO.Compression.ZipFile]::OpenRead($resolvedTemplate)
+  $targetZip = [IO.Compression.ZipFile]::Open($temporaryPath, [IO.Compression.ZipArchiveMode]::Create)
+
   foreach ($item in @(
       @{ Name = "document.xml"; Content = $documentXml },
       @{ Name = "page/page.xml"; Content = $pageXml },
@@ -240,8 +254,45 @@ try {
   }
 }
 finally {
-  $targetZip.Dispose()
-  $templateZip.Dispose()
+  if ($null -ne $targetZip) {
+    $targetZip.Dispose()
+  }
+
+  if ($null -ne $templateZip) {
+    $templateZip.Dispose()
+  }
+}
+
+try {
+  $validationZip = [IO.Compression.ZipFile]::OpenRead($temporaryPath)
+  try {
+    foreach ($requiredEntry in @("document.xml", "page/page.xml", "rels/page_rels.xml", "theme.xml", "thumbnail.png")) {
+      if ($null -eq $validationZip.GetEntry($requiredEntry)) {
+        throw "Generated package is missing required entry: $requiredEntry"
+      }
+    }
+
+    foreach ($xmlEntryName in @("document.xml", "page/page.xml", "rels/page_rels.xml", "theme.xml")) {
+      $xmlEntry = $validationZip.GetEntry($xmlEntryName)
+      $reader = [IO.StreamReader]::new($xmlEntry.Open())
+      try {
+        [void][xml]$reader.ReadToEnd()
+      }
+      finally {
+        $reader.Dispose()
+      }
+    }
+  }
+  finally {
+    $validationZip.Dispose()
+  }
+
+  Move-Item -LiteralPath $temporaryPath -Destination $outputPath -Force:$Force
+}
+finally {
+  if (Test-Path -LiteralPath $temporaryPath) {
+    Remove-Item -LiteralPath $temporaryPath -Force
+  }
 }
 
 if ($Open) {
