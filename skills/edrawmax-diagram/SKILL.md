@@ -28,6 +28,7 @@ description: Create, edit, validate, open, or export diagrams with EdrawMax firs
 
 ## 布局与连线
 
+- 不要根据空白模板的当前页尺寸压缩或折返布局；先按内容关系和可读间距规划，EdrawMax 生成脚本会根据内容边界自动扩展页面。
 - 主流程默认左到右或上到下，节点共线且不折返。
 - 反馈线从主流程外侧绕回；干扰和支线从侧面或底部接入。
 - 为多边汇入增加汇聚、比较或接口节点，避免三条以上边直接挤入正文节点。
