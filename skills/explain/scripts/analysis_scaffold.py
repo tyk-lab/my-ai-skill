@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Create profile-aware drawio scaffolds after confirmation."""
+"""Create or migrate a profile-aware multipage drawio scaffold after confirmation."""
 
 from __future__ import annotations
 
 import argparse
 import html
 import re
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
 
@@ -56,6 +57,7 @@ DOCS_REQUIRED = [
 NUMBERED_CONTENT_DIR = re.compile(r"^\d{2}_")
 DOCS_ENTRY_DOCS = {"00_阅读引导.md"}
 DOCS_SUPPORT_DIRS = {"_scripts", "_demos", "_figures"}
+OUTPUT_NAME = "PROJECT_ANALYSIS.drawio"
 
 
 def detect_profile(root: Path) -> str:
@@ -84,10 +86,9 @@ def detect_profile(root: Path) -> str:
     return "general"
 
 
-def drawio_xml(title: str, prompt: str) -> str:
+def drawio_page(title: str, prompt: str, page_id: str) -> str:
     value = html.escape(f"{title}\n\n待补充: {prompt}\n证据: file:line\n状态: [需深挖]")
-    return f"""<mxfile host="app.diagrams.net">
-  <diagram name="{html.escape(title)}" id="{html.escape(title)}">
+    return f"""<diagram name="{html.escape(title)}" id="{page_id}">
     <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
       <root>
         <mxCell id="0"/>
@@ -97,9 +98,62 @@ def drawio_xml(title: str, prompt: str) -> str:
         </mxCell>
       </root>
     </mxGraphModel>
-  </diagram>
-</mxfile>
-"""
+  </diagram>"""
+
+
+def drawio_xml(pages: list[tuple[str, str]]) -> str:
+    page_xml = [
+        drawio_page(title, prompt, f"analysis-page-{index:02d}")
+        for index, (title, prompt) in enumerate(pages)
+    ]
+    return '<mxfile host="app.diagrams.net" agent="Codex">\n  ' + "\n  ".join(page_xml) + "\n</mxfile>\n"
+
+
+def extract_pages(path: Path) -> list[str]:
+    source = path.read_text(encoding="utf-8")
+    ET.fromstring(source)
+    pages = re.findall(r"<diagram\b[^>]*>.*?</diagram>", source, flags=re.DOTALL)
+    if not pages:
+        raise ValueError(f"No <diagram> page found in {path}")
+
+    renamed = []
+    for index, page in enumerate(pages):
+        opening_end = page.index(">")
+        opening = page[:opening_end]
+        page_name = path.stem if index == 0 else f"{path.stem}-子页-{index + 1:02d}"
+        escaped_name = html.escape(page_name, quote=True)
+        if re.search(r'\bname="[^"]*"', opening):
+            opening = re.sub(r'\bname="[^"]*"', f'name="{escaped_name}"', opening, count=1)
+        else:
+            opening += f' name="{escaped_name}"'
+        renamed.append(opening + page[opening_end:])
+    return renamed
+
+
+def merge_existing(out_dir: Path, target: Path, force: bool, remove_sources: bool) -> int:
+    sources = sorted(path for path in out_dir.glob("[0-9][0-9]-*.drawio") if path != target)
+    if not sources:
+        print(f"No legacy project-analysis drawio files found in {out_dir}.")
+        return 2
+    if target.exists() and not force:
+        print(f"Refusing to overwrite {target}. Re-run with --force only after explicit overwrite confirmation.")
+        return 2
+
+    pages = [page for source in sources for page in extract_pages(source)]
+    merged = '<mxfile host="app.diagrams.net" agent="Codex">\n  ' + "\n  ".join(pages) + "\n</mxfile>\n"
+    ET.fromstring(merged)
+    target.write_text(merged, encoding="utf-8", newline="\n")
+
+    if remove_sources:
+        for source in sources:
+            source.unlink()
+
+    print(f"{target} ({len(pages)} pages)")
+    if remove_sources:
+        print(f"Removed {len(sources)} legacy drawio files after successful XML validation.")
+    else:
+        print("Legacy drawio files were retained. Use --remove-sources only after explicit deletion confirmation.")
+    return 0
 
 
 def main() -> int:
@@ -114,10 +168,12 @@ def main() -> int:
     parser.add_argument(
         "--include-optional",
         action="store_true",
-        help="Also scaffold optional analysis files for embedded/general profiles.",
+        help="Also scaffold optional analysis pages for embedded/general profiles.",
     )
     parser.add_argument("--write", action="store_true", help="Actually write files. Without this, only prints the plan.")
-    parser.add_argument("--force", action="store_true", help="Allow overwriting existing scaffold files after explicit confirmation.")
+    parser.add_argument("--force", action="store_true", help="Allow overwriting the existing multipage file after explicit confirmation.")
+    parser.add_argument("--merge-existing", action="store_true", help="Merge legacy numbered drawio files into one multipage file.")
+    parser.add_argument("--remove-sources", action="store_true", help="Delete legacy files after a successful merge and XML validation.")
     args = parser.parse_args()
 
     root = Path(args.root).resolve()
@@ -128,29 +184,34 @@ def main() -> int:
         "general": COMMON_REQUIRED + GENERAL_REQUIRED,
         "docs": DOCS_REQUIRED,
     }[profile]
-    files = required + (OPTIONAL if args.include_optional and profile != "docs" else [])
-    planned = [out_dir / f"{title}.drawio" for title, _ in files]
+    pages = required + (OPTIONAL if args.include_optional and profile != "docs" else [])
+    target = out_dir / OUTPUT_NAME
+
+    if args.remove_sources and not args.merge_existing:
+        parser.error("--remove-sources requires --merge-existing")
+    if args.merge_existing:
+        if args.write:
+            parser.error("--merge-existing writes directly; do not combine it with --write")
+        return merge_existing(out_dir, target, args.force, args.remove_sources)
 
     if not args.write:
         print(f"Dry run. Analysis profile: {profile}. Re-run with --write after user confirmation.")
-        for path in planned:
-            print(path)
-        print("Then complete the diagrams and write .project-analysis/PROJECT_ANALYSIS.md from their actual content.")
+        print(target)
+        for title, _ in pages:
+            print(f"  page: {title}")
+        print("Then complete all pages and write .project-analysis/PROJECT_ANALYSIS.md from their actual content.")
         return 0
 
-    existing = [path for path in planned if path.exists()]
-    if existing and not args.force:
-        print("Refusing to overwrite existing files. Re-run with --force only after explicit overwrite confirmation.")
-        for path in existing:
-            print(path)
+    if target.exists() and not args.force:
+        print("Refusing to overwrite the existing multipage file. Re-run with --force only after explicit overwrite confirmation.")
+        print(target)
         return 2
 
     out_dir.mkdir(parents=True, exist_ok=True)
-    for title, prompt in files:
-        (out_dir / f"{title}.drawio").write_text(drawio_xml(title, prompt), encoding="utf-8", newline="\n")
-    for path in planned:
-        print(path)
-    print("After completing and verifying all diagrams, write .project-analysis/PROJECT_ANALYSIS.md from their actual content.")
+    target.write_text(drawio_xml(pages), encoding="utf-8", newline="\n")
+    print(target)
+    print(f"Created {len(pages)} pages.")
+    print("After completing and verifying all pages, write .project-analysis/PROJECT_ANALYSIS.md from their actual content.")
     return 0
 
 
