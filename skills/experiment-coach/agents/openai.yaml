@@ -1,7 +1,7 @@
 interface:
   display_name: "实验阶段教练"
-  short_description: "从概念和结果出发，引导实验探索、工程权衡与应用验证"
-  default_prompt: "使用 $experiment-coach 从我已有的概念或结果出发，规划实验并逐步连接真实工程问题与应用。"
+  short_description: "用最小模型和数据实验建立直觉并指导设计选型"
+  default_prompt: "使用 $experiment-coach 从现象和预测出发，以最小模型和数据实验建立直觉，只展开影响结论的必要细节，在形成直觉后补齐数学物理原理，并把结论用于预测、设计改进或选型。"
 
 policy:
   allow_implicit_invocation: false
