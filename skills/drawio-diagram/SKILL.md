@@ -1,17 +1,17 @@
 ---
 name: drawio-diagram
-description: Create, edit, validate, open, or export semantically expressive diagrams with draw.io as the default backend. Use for flowcharts, architecture diagrams, ER diagrams, sequence diagrams, class diagrams, network diagrams, block diagrams, timelines, charts, concept maps, mind maps, mockups, wireframes, UI sketches, 思维导图, draw.io, MindMaster, EdrawMind, .drawio, .emmx, PNG, SVG, or PDF diagram export.
+description: Create, edit, validate, open, or export semantically expressive diagrams using draw.io as the authoring backend. Use for flowcharts, architecture diagrams, ER diagrams, sequence diagrams, class diagrams, network diagrams, block diagrams, timelines, charts, concept maps, mind maps, mockups, wireframes, UI sketches, 思维导图, draw.io, .drawio, PNG, SVG, or PDF diagram export.
 ---
 
 # Draw.io Diagram
 
-生成结构清晰、符号语义准确、可编辑且经过验证的图表。默认使用 draw.io 原生 `mxGraphModel` 格式；思维导图仍走 MindMaster/EdrawMind 原生格式。不再使用 EdrawMax 生成图表。
+生成结构清晰、符号语义准确、可编辑且经过验证的图表。所有图表（包括思维导图和概念图）统一使用 draw.io 原生 `mxGraphModel` 格式，不使用 Mermaid、CSV 或其他绘图后端伪装目标格式。
 
 ## 核心流程
 
 1. 提取图表目的、阅读层级、节点、关系、方向、分组、关键反馈、参考图特征和输出路径。
 2. 先选表达范式，再选具体符号：流程图、分层框图、时间线、列表、概念图、网络图等不可混为同一种“方框连线图”。
-3. 按“后端与符号来源”确定格式，并读取对应参考文件。
+3. 读取 draw.io 生成规范，并按图表语义选择内置形状或 stencil 符号。
 4. 先规划视觉层级和主链路，再生成文件；主流程单向，反馈和辅助关系走外围。
 5. 验证结构、文本、箭头、线型、符号语义和视觉可读性；发现问题后修正再交付。
 
@@ -24,14 +24,13 @@ description: Create, edit, validate, open, or export semantically expressive dia
 
 完整选型规则见 [references/visual-language.md](references/visual-language.md)。
 
-## 后端与符号来源
+## draw.io 后端与符号来源
 
-按以下优先级选择，禁止仅修改扩展名伪造格式：
+始终使用 draw.io 后端，禁止仅修改扩展名伪造格式：
 
-1. MindMaster、EdrawMind、`.emmx` 或原生思维导图：读取 [references/mindmaster.md](references/mindmaster.md)。
-2. 其余所有图表默认使用 draw.io：读取 [references/drawio.md](references/drawio.md)，直接生成 `mxGraphModel` XML 的 `.drawio` 文件，不用 Mermaid 或 CSV 伪装。
-3. 通用流程、架构和框图优先使用 draw.io 内置语义形状；专业网络、云、电气、平面图等图表先查询技能内置 `stencils/` 库（可用 `scripts/sync-drawio-stencils.ps1` 下载更新）获取标准符号。
-4. 找不到准确符号时，用简化语义图形并保持对象类别、端口和拓扑，不用装饰性图标冒充标准符号。
+1. 读取 [references/drawio.md](references/drawio.md)，直接生成 `mxGraphModel` XML 的 `.drawio` 文件；流程图、架构图、思维导图、概念图和线框图均走此路径。
+2. 通用流程、架构和框图优先使用 draw.io 内置语义形状；专业网络、云、电气、平面图等图表先查询技能内置 `stencils/` 库（可用 `scripts/sync-drawio-stencils.ps1` 下载更新）获取标准符号。
+3. 找不到准确符号时，用简化语义图形并保持对象类别、端口和拓扑，不用装饰性图标冒充标准符号。
 
 符号库发现和查询命令见 [references/symbol-libraries.md](references/symbol-libraries.md)。
 
@@ -76,7 +75,7 @@ draw.io 具体样式写法见 [references/drawio.md](references/drawio.md)。
 
 ## 输出格式
 
-- 默认只交付可编辑源文件：`.drawio` 或 `.emmx`。
+- 只交付可编辑的 `.drawio` 源文件；用户要求导出格式时按下一条同时提供。
 - 用户要求 PNG、SVG 或 PDF 时，用 drawio CLI 导出并加 `-e` 嵌入图表 XML，保留可编辑性。
 - 不覆盖现有文件；仅在用户明确要求覆盖时才重写已有文件。
 - 输出文件名使用能表达内容的英文小写短横线形式，路径优先采用用户指定位置。
