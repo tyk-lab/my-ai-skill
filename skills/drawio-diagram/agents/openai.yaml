@@ -1,7 +1,7 @@
 interface:
   display_name: "Draw.io 图表设计"
   short_description: "用 draw.io 原生符号、语义图形和清晰连线创建可编辑图表"
-  default_prompt: "使用 $edrawmax-diagram 按内容语义选择 draw.io 形状、符号和线型，创建结构清晰且经过验证的可编辑图表。"
+  default_prompt: "使用 $drawio-diagram 按内容语义选择 draw.io 形状、符号和线型，创建结构清晰且经过验证的可编辑图表。"
 
 policy:
   allow_implicit_invocation: true

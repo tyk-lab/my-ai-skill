@@ -1,5 +1,5 @@
 ---
-name: edrawmax-diagram
+name: drawio-diagram
 description: Create, edit, validate, open, or export semantically expressive diagrams with draw.io as the default backend. Use for flowcharts, architecture diagrams, ER diagrams, sequence diagrams, class diagrams, network diagrams, block diagrams, timelines, charts, concept maps, mind maps, mockups, wireframes, UI sketches, 思维导图, draw.io, MindMaster, EdrawMind, .drawio, .emmx, PNG, SVG, or PDF diagram export.
 ---
 
