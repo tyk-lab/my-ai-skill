@@ -195,8 +195,8 @@ $documentXml = @"
         <ScreenHeight V="1440"/>
         <Platform V="win"/>
         <ModifyPlatform V="win"/>
-        <Creator V="Codex"/>
-        <Modifier V="Codex"/>
+        <Creator V="edrawmax-diagram"/>
+        <Modifier V="edrawmax-diagram"/>
         <CreatedDate V="$now"/>
         <ModifiedDate V="$now"/>
         <Pages V="page"/>
@@ -296,7 +296,20 @@ finally {
 }
 
 if ($Open) {
-  mindmaster $outputPath
+  $command = Get-Command mindmaster -ErrorAction SilentlyContinue
+  if ($null -ne $command) {
+    & $command.Source $outputPath
+  }
+  else {
+    $executable = Get-ChildItem -LiteralPath (Join-Path $env:ProgramFiles "Edrawsoft") -Directory -Filter "MindMaster*" -ErrorAction SilentlyContinue |
+      ForEach-Object { Join-Path $_.FullName "MindMaster.exe" } |
+      Where-Object { Test-Path -LiteralPath $_ -PathType Leaf } |
+      Select-Object -First 1
+    if (-not $executable) {
+      throw "MindMaster executable not found. File was generated successfully: $outputPath"
+    }
+    Start-Process -FilePath $executable -ArgumentList @($outputPath)
+  }
 }
 
 Get-Item -LiteralPath $outputPath

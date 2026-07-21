@@ -6,16 +6,17 @@
 
 ## 检测与生成
 
-在 Windows PowerShell 7 中检测命令：
+在 Windows PowerShell 7 中检测命令和默认模板，两者均存在时才视为可用：
 
 ```powershell
 Get-Command mindmaster -ErrorAction SilentlyContinue
+Get-ChildItem "$env:ProgramFiles\Edrawsoft\MindMaster*\Config\empty.emmx"
 ```
 
 使用技能自带脚本生成中心主题和一级分支：
 
 ```powershell
-pwsh -NoProfile -File "$env:USERPROFILE\.agents\skills\edrawmax-diagram\scripts\new-mindmaster-map.ps1" `
+./scripts/new-mindmaster-map.ps1 `
   -Title "Project Plan" `
   -Branch "Goal","Scope","Timeline","Risks" `
   -Output "C:\path\project-plan.emmx"
