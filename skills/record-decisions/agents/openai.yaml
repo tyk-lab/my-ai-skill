@@ -1,0 +1,4 @@
+interface:
+  display_name: "对话记忆"
+  short_description: "仅在明确要求时记录已对齐认知、纠正事项与确认方向的历史"
+  default_prompt: "使用 $record-decisions 保存本次已对齐的认知与确认方向。"
