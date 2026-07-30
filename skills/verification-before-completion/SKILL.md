@@ -1,167 +1,62 @@
 ---
 name: verification-before-completion
-description: Use when about to claim work is complete, fixed, or passing, before committing or creating PRs. Requires running verification commands and confirming output before making any success claims; evidence before assertions always.
+description: Verify deliverable claims after a material change and immediately before stating work is complete, fixed, built, tested, or ready to commit/create a PR. Use after changing code, configuration, dependencies, deliverable content, external state, or observable behavior; do not use for discussion, planning, read-only investigation, or routine progress updates that make no completion claim.
 ---
 
 # Verification Before Completion
 
-**Announce at start:** "I'm using the verification-before-completion skill to verify before claiming done."
+Use this skill as the final evidence gate for a changed deliverable. State unverified work plainly; do not imply it is complete or correct.
 
-## Overview
+## Scope
 
-Claiming work is complete without verification is dishonesty, not efficiency.
+A material change alters a requested deliverable or its observable behavior: for example, code, configuration, dependency, documentation, generated output, or an external system state. Reading, investigating, planning, or reporting progress is not a material change.
 
-**Core principle:** Evidence before claims, always.
+## Workflow
 
-**Violating the letter of this rule is violating the spirit of this rule.**
+1. List the completion claims you will make.
+2. Select the smallest fresh evidence that directly supports each claim.
+3. Run or inspect that evidence after the latest relevant change.
+4. Report the result, plus anything still unverified.
 
-Run AFTER any change or fix — this skill is the last gate before commit / PR / "done". For substantial changes, do a code review first, then verify here.
+Evidence stays valid until the relevant implementation, configuration, dependency, test target, or validation environment changes. A validation environment change means a relevant runtime, toolchain, dependency set, target service, or test configuration change—not an unrelated file, chat message, or elapsed time.
 
-## The Iron Law
+## Map claims to evidence
 
-```
-NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE
-```
+| Claim | Minimum evidence |
+| --- | --- |
+| Requested implementation is present | Inspect the focused diff or changed artifact |
+| Tests pass | The applicable test command completes with no failures |
+| Build succeeds | The applicable build command exits successfully |
+| Bug fixed | The original reproduction or a targeted regression test passes |
+| Requirements met | Check each stated acceptance requirement against the artifact and relevant test results |
+| Ready to commit or open a PR | Verify the intended working-tree and staged/branch scope, then run the checks appropriate to the changed risk |
 
-If you haven't run the verification command in this message, you cannot claim it passes.
+Do not substitute one kind of evidence for another: a clean diff does not prove behavior, and a passing linter does not prove a build.
 
-## The Gate Function
+## Choose proportionate verification
 
-```
-BEFORE claiming any status or expressing satisfaction:
+- Documentation or low-risk metadata: inspect the focused diff and validate the relevant format or link when applicable.
+- Localized code change with no behavior change: run the nearest relevant lint, type-check, build, or targeted test.
+- Behavior change or bug fix: run the original reproduction or a targeted behavioral/regression test. Lint, type-check, and build results are supplementary evidence, not proof of behavior.
+- Cross-cutting, security-sensitive, release-bound, or dependency/configuration change: run the targeted checks plus the project’s broader required validation.
+- Hardware, third-party service, or manual UI behavior: perform the available check and explicitly name the unverified portion and residual risk.
 
-1. IDENTIFY: What command proves this claim?
-2. RUN: Execute the FULL command (fresh, complete)
-3. READ: Full output, check exit code, count failures
-4. VERIFY: Does output confirm the claim?
-   - If NO: State actual status with evidence
-   - If YES: State claim WITH evidence
-5. ONLY THEN: Make the claim
+Partial verification is useful evidence with limited scope. Report its scope; do not extrapolate it into a stronger claim.
 
-Skip any step = lying, not verifying
-```
+## Reporting
 
-## How To Run a Verification
+Keep the report close to the claim and concise:
 
-1. **List the claims** you're about to make (tests pass, builds, bug fixed, requirement met).
-2. **Map each claim to a command** that proves it. No command exists? Then you can't claim it — say so honestly.
-3. **Run the FULL command fresh** in this message. Not a subset, not a cached result, not a prior run.
-4. **Read the whole output**: exit code, failure count, error lines — not just the last line.
-5. **Quote the evidence** when you make the claim (command + key output line).
-
-If a command can't be run here (e.g. no environment, hardware-in-the-loop, manual QA), state explicitly what is **unverified** and the residual risk — never imply success.
-
-## Output Format
-
-Report verification as evidence, not adjectives:
-
-```
-## Verification
-- `<command>` → <key result, e.g. exit 0 / 34 passed, 0 failed>
-- `<command>` → <result>
-
-Unverified: <anything you could not run, + why + risk>
+```markdown
+Verification: `<command or inspection>` → <key result>
+Unverified: <item, reason, and residual risk; omit if none>
 ```
 
-Then, and only then, state the completion claim.
+Do not use bare “complete”. Say “implementation complete” only when the requested artifact is present, and say “requirements verified complete” only after checking every stated acceptance requirement. Only say “fixed”, “passing”, “ready to commit”, or equivalent when the listed evidence supports that exact statement. Otherwise describe the current state without a completion claim.
 
-## Common Failures
+## Do not trigger for
 
-| Claim | Requires | Not Sufficient |
-|-------|----------|----------------|
-| Tests pass | Test command output: 0 failures | Previous run, "should pass" |
-| Linter clean | Linter output: 0 errors | Partial check, extrapolation |
-| Build succeeds | Build command: exit 0 | Linter passing, logs look good |
-| Bug fixed | Test original symptom: passes | Code changed, assumed fixed |
-| Regression test works | Red-green cycle verified | Test passes once |
-| Agent completed | VCS diff shows changes | Agent reports "success" |
-| Requirements met | Line-by-line checklist | Tests passing |
-
-## Red Flags - STOP
-
-- Using "should", "probably", "seems to"
-- Expressing satisfaction before verification ("Great!", "Perfect!", "Done!", etc.)
-- About to commit/push/PR without verification
-- Trusting agent success reports
-- Relying on partial verification
-- Thinking "just this once"
-- Tired and wanting work over
-- **ANY wording implying success without having run verification**
-
-## Rationalization Prevention
-
-| Excuse | Reality |
-|--------|---------|
-| "Should work now" | RUN the verification |
-| "I'm confident" | Confidence ≠ evidence |
-| "Just this once" | No exceptions |
-| "Linter passed" | Linter ≠ compiler |
-| "Agent said success" | Verify independently |
-| "I'm tired" | Exhaustion ≠ excuse |
-| "Partial check is enough" | Partial proves nothing |
-| "Different words so rule doesn't apply" | Spirit over letter |
-
-## Key Patterns
-
-**Tests:**
-```
-✅ [Run test command] [See: 34/34 pass] "All tests pass"
-❌ "Should pass now" / "Looks correct"
-```
-
-**Regression tests (TDD Red-Green):**
-```
-✅ Write → Run (pass) → Revert fix → Run (MUST FAIL) → Restore → Run (pass)
-❌ "I've written a regression test" (without red-green verification)
-```
-
-**Build:**
-```
-✅ [Run build] [See: exit 0] "Build passes"
-❌ "Linter passed" (linter doesn't check compilation)
-```
-
-**Requirements:**
-```
-✅ Re-read plan → Create checklist → Verify each → Report gaps or completion
-❌ "Tests pass, phase complete"
-```
-
-**Agent delegation:**
-```
-✅ Agent reports success → Check VCS diff → Verify changes → Report actual state
-❌ Trust agent report
-```
-
-## Why This Matters
-
-Skipping verification has concrete costs:
-- Trust breaks once the partner catches one false "done" — every later claim is then doubted.
-- Undefined functions / broken builds ship and crash downstream.
-- Missing requirements ship as silently incomplete features.
-- "Done" → redirect → rework wastes more time than verifying would have.
-- Honesty is a core value: an unverified success claim is a lie, even when well-intentioned.
-
-## When To Apply
-
-**ALWAYS before:**
-- ANY variation of success/completion claims
-- ANY expression of satisfaction
-- ANY positive statement about work state
-- Committing, PR creation, task completion
-- Moving to next task
-- Delegating to agents
-
-**Rule applies to:**
-- Exact phrases
-- Paraphrases and synonyms
-- Implications of success
-- ANY communication suggesting completion/correctness
-
-## The Bottom Line
-
-**No shortcuts for verification.**
-
-Run the command. Read the output. THEN claim the result.
-
-This is non-negotiable.
+- Planning, design discussion, or explaining code
+- Read-only investigation or review
+- Intermediate progress updates such as “I found the cause” or “the edit is in progress”
+- A request that made no material change and does not assert a deliverable is complete
