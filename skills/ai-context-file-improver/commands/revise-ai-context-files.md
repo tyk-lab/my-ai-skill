@@ -23,30 +23,31 @@ Use the command style that fits the current environment:
 
 ```bash
 # rg (preferred)
-rg --files -g 'CLAUDE.md' -g '.claude.local.md' -g 'AGENTS.md' \
+rg --files -g 'CLAUDE.md' -g '.claude.local.md' -g 'AGENTS.md' -g 'AGENTS.override.md' \
   -g '.cursorrules' -g '.windsurfrules' -g '.github/copilot-instructions.md' \
-  -g '.cursor/rules/*.md' \
+  -g '.github/instructions/**/*.instructions.md' -g '**/.cursor/rules/**/*.mdc' \
   -g '!node_modules/**' -g '!.git/**'
 
 # POSIX fallback
 find . \( \
   -name "CLAUDE.md" -o -name ".claude.local.md" \
-  -o -name "AGENTS.md" \
+  -o -name "AGENTS.md" -o -name "AGENTS.override.md" \
   -o -name ".cursorrules" \
   -o -name ".windsurfrules" \
   -o -name "copilot-instructions.md" \
-  -o -path "*/.cursor/rules/*.md" \
+  -o -path "*/.cursor/rules/*.mdc" \
+  -o -path "*/.github/instructions/*.instructions.md" \
 \) -not -path "*/node_modules/*" -not -path "*/.git/*" 2>/dev/null
 ```
 
 ```powershell
 # PowerShell fallback
-Get-ChildItem -Recurse -Force -File -Include CLAUDE.md,.claude.local.md,AGENTS.md,.cursorrules,.windsurfrules,copilot-instructions.md |
-  Where-Object { $_.FullName -notmatch '\\(node_modules|\.git|dist|build)\\' }
-Get-ChildItem -Recurse -Force -File -Filter *.md |
+Get-ChildItem -Recurse -Force -File |
   Where-Object {
-    $_.FullName -match '[\\/]\.cursor[\\/]rules[\\/].+\.md$' -and
-    $_.FullName -notmatch '\\(node_modules|\.git|dist|build)\\'
+    $_.FullName -notmatch '\\(node_modules|\.git|dist|build)\\' -and
+    ($_.Name -in @('CLAUDE.md', '.claude.local.md', 'AGENTS.md', 'AGENTS.override.md', '.cursorrules', '.windsurfrules', 'copilot-instructions.md') -or
+     $_.FullName -match '[\\/]\.cursor[\\/]rules[\\/].+\.mdc$' -or
+     $_.FullName -match '[\\/]\.github[\\/]instructions[\\/].+\.instructions\.md$')
   }
 ```
 
@@ -82,6 +83,8 @@ For each addition:
 \`\`\`
 ```
 
-## Step 5: Apply with Approval
+Do not edit yet. First show every proposed diff.
 
-Ask if the user wants to apply the changes. Only edit files they approve.
+## Step 5: Apply with One Approval
+
+Ask once whether to apply the displayed diffs. Only edit files the user approves, then verify the write with a targeted read or `git diff`.

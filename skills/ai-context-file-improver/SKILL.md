@@ -15,12 +15,12 @@ Audit, evaluate, and improve AI project context files to ensure your AI coding a
 |------|--------------|---------------------------|
 | Claude Code | `CLAUDE.md`, `.claude.local.md` | `~/.claude/CLAUDE.md` |
 | OpenCode | `AGENTS.md` | `~/.config/opencode/AGENTS.md` |
-| OpenAI Codex | `AGENTS.md` | — |
-| Cursor | `.cursorrules`, `.cursor/rules/*.md` | `~/.cursor/rules/` |
-| GitHub Copilot | `.github/copilot-instructions.md` | — |
+| OpenAI Codex | `AGENTS.override.md`, `AGENTS.md`, configured fallback files | `~/.codex/AGENTS.override.md`, `~/.codex/AGENTS.md` |
+| Cursor | `.cursorrules` (legacy), `.cursor/rules/**/*.mdc` | User Rules in Cursor settings |
+| GitHub Copilot | `.github/copilot-instructions.md`, `.github/instructions/**/*.instructions.md`, `AGENTS.md` where supported | Product/surface-specific personal instructions |
 | Windsurf | `.windsurfrules` | — |
 
-> **Tool behavior note:** Loading rules and fallback behavior can change over time. Verify the current tool's official loading rules before recommending file consolidation, fallback assumptions, or migration steps.
+> **Tool behavior note:** Loading rules, fallback names, file formats, and precedence can change by tool and surface (for example, IDE chat, CLI, cloud agent, or code review). Verify the current tool's official loading rules before recommending file consolidation, fallback assumptions, migration steps, or cross-file alignment. For Codex, inspect `.codex/config.toml` when present to identify configured fallback names and byte limits; do not treat it as a context file unless the user asks to audit configuration.
 
 ## Workflow
 
@@ -29,34 +29,36 @@ Audit, evaluate, and improve AI project context files to ensure your AI coding a
 Find all AI context files in the repository. Use the command style that fits the current environment; the examples below are starting points, not a requirement to run Bash on every system.
 
 ```bash
-rg --files -g 'CLAUDE.md' -g '.claude.local.md' -g 'AGENTS.md' \
+rg --files -g 'CLAUDE.md' -g '.claude.local.md' -g 'AGENTS.md' -g 'AGENTS.override.md' \
   -g '.cursorrules' -g '.windsurfrules' \
-  -g '.github/copilot-instructions.md' -g '.cursor/rules/*.md' \
+  -g '.github/copilot-instructions.md' -g '.github/instructions/**/*.instructions.md' \
+  -g '**/.cursor/rules/**/*.mdc' \
   -g '!node_modules/**' -g '!.git/**' -g '!dist/**' -g '!build/**'
 
 # POSIX fallback
 find . \( \
   -name "CLAUDE.md" -o -name ".claude.local.md" \
-  -o -name "AGENTS.md" \
+  -o -name "AGENTS.md" -o -name "AGENTS.override.md" \
   -o -name ".cursorrules" \
   -o -name ".windsurfrules" \
   -o -name "copilot-instructions.md" \
-  -o -path "*/.cursor/rules/*.md" \
+  -o -path "*/.cursor/rules/*.mdc" \
+  -o -path "*/.github/instructions/*.instructions.md" \
 \) -not -path "*/node_modules/*" -not -path "*/.git/*" 2>/dev/null
 ```
 
 ```powershell
 # PowerShell fallback
-Get-ChildItem -Recurse -Force -File -Include CLAUDE.md,.claude.local.md,AGENTS.md,.cursorrules,.windsurfrules,copilot-instructions.md |
-  Where-Object { $_.FullName -notmatch '\\(node_modules|\.git|dist|build)\\' }
-Get-ChildItem -Recurse -Force -File -Filter *.md |
+Get-ChildItem -Recurse -Force -File |
   Where-Object {
-    $_.FullName -match '[\\/]\.cursor[\\/]rules[\\/].+\.md$' -and
-    $_.FullName -notmatch '\\(node_modules|\.git|dist|build)\\'
+    $_.FullName -notmatch '\\(node_modules|\.git|dist|build)\\' -and
+    ($_.Name -in @('CLAUDE.md', '.claude.local.md', 'AGENTS.md', 'AGENTS.override.md', '.cursorrules', '.windsurfrules', 'copilot-instructions.md') -or
+     $_.FullName -match '[\\/]\.cursor[\\/]rules[\\/].+\.mdc$' -or
+     $_.FullName -match '[\\/]\.github[\\/]instructions[\\/].+\.instructions\.md$')
   }
 ```
 
-Only process files found inside the repository by default. Do **not** inspect or read global user files (`~/.claude/CLAUDE.md`, `~/.config/opencode/AGENTS.md`, `~/.cursor/rules/`, etc.) unless the user explicitly asks to audit their global rules. When global files are included by explicit request, treat them as **audit-only**: you may compare them, score them, and recommend changes, but you must not modify them. Identify which tool(s) the project uses based on the files found and any tooling config in the repo (e.g., `.vscode/`, `opencode.json`, `.cursor/`). If multiple tools are used, process all their project-level files.
+Only process files found inside the repository by default. Do **not** inspect or read global user files (`~/.claude/CLAUDE.md`, `~/.config/opencode/AGENTS.md`, `~/.codex/AGENTS.md`, etc.) unless the user explicitly asks to audit their global rules. When global files are included by explicit request, treat them as **audit-only**: you may compare them, score them, and recommend changes, but you must not modify them. Identify each file's tool, product surface, scope, and loading behavior from official documentation and repository configuration (for example, `.vscode/`, `opencode.json`, `.cursor/`, `.codex/config.toml`). Compare files only when the selected surface can load them together; otherwise report them separately. If multiple tools are used, process all their project-level files.
 
 **File Types & Locations:**
 
@@ -80,8 +82,8 @@ For each context file found, evaluate against quality criteria. See [references/
 | Architecture clarity | 15 | Can the AI understand the codebase structure? |
 | Non-obvious patterns | 10 | Are gotchas and quirks documented? |
 | Conciseness | 10 | No verbose explanations or obvious info? |
-| Currency | 15 | Does it reflect current codebase state? |
-| Actionability | 15 | Are instructions executable, not vague? |
+| Currency | 15 | Does it reflect current codebase and the selected tool surface's supported format/loading behavior? |
+| Actionability | 15 | Are instructions concrete and their commands verified at a stated evidence level? |
 | Leanness | 10 | No redundant, duplicate, or padded content? |
 | Cross-file alignment | 10 | No conflicts or duplications across sibling context files? Use full credit when only one context file exists. |
 
@@ -94,6 +96,8 @@ For each context file found, evaluate against quality criteria. See [references/
 
 **Length Guidelines:**
 
+Treat line counts as review prompts, not automatic pass/fail thresholds. Prefer a documented tool byte limit and format requirements when available; flag a file that is long only when its content or loading limit makes it harmful.
+
 | File scope | Recommended length | Hard limit |
 |---|---|---|
 | Global user rules (`~/.claude/CLAUDE.md`) | 60–120 lines | 200 lines |
@@ -104,7 +108,7 @@ If a file exceeds the hard limit, flag it and recommend splitting into focused s
 
 ### Phase 2b: Cross-File Alignment Check
 
-When multiple context files are found (for example, multiple project-level files for different tools, or user-requested global files plus project files), compare them for:
+When multiple context files are found, compare only files that can be loaded together for the selected tool surface. Record the surface and precedence before comparing them. For example, do not call a Copilot IDE-only file inconsistent with a cloud-agent-only file without evidence that both apply to the task.
 
 1. **Duplicated rules** — same rule stated in multiple files verbatim or near-verbatim.
    → Flag and recommend keeping it only in the most appropriate scope (global vs project).
@@ -166,7 +170,7 @@ Format:
 
 ### Phase 4: Targeted Updates
 
-After outputting the quality report, ask user for confirmation before updating.
+After outputting the quality report, draft targeted diffs. Do not edit yet.
 
 > **Scope limit**: Only modify files inside the repository. Never write to global user files (`~/.claude/CLAUDE.md`, `~/.config/opencode/AGENTS.md`, `~/.cursor/rules/`, etc.) even if they were read at the user's explicit request.
 
@@ -216,9 +220,9 @@ After outputting the quality report, ask user for confirmation before updating.
 \`\`\`
 ```
 
-### Phase 5: Apply Updates
+### Phase 5: Apply Approved Diffs
 
-After user approval, apply changes using the current environment's available editing mechanism. Preserve existing content structure, then verify the write with a targeted file read, `git diff`, or `git status`.
+Ask once for approval after all proposed diffs are shown. After the user approves the specified diffs, apply only those changes using the current environment's available editing mechanism. Preserve existing content structure, then verify the write with a targeted file read, `git diff`, or `git status`.
 
 ## Templates
 

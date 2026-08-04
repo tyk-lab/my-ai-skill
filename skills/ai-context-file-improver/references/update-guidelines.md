@@ -144,7 +144,8 @@ Before finalizing an update, verify:
 
 - [ ] Each addition is project-specific
 - [ ] No generic advice or obvious info
-- [ ] Commands are tested and work
+- [ ] Each command has an explicit evidence level: configuration inspection, safe execution, or unverified
+- [ ] Destructive, expensive, credentialed, deploy, and migration commands were not executed by default
 - [ ] File paths are accurate
 - [ ] Would the AI assistant find this helpful in a new session?
 - [ ] Is this the most concise way to express the info?
