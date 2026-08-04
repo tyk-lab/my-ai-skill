@@ -1,18 +1,24 @@
 ---
 name: drawio-diagram
-description: Create, edit, validate, open, or export semantically expressive diagrams specifically with draw.io as the authoring backend. Use when the user explicitly requests draw.io or a .drawio file, requires an editable diagram source, asks to edit an existing draw.io artifact, or clearly requests a formal flowchart, architecture/ER/sequence/class/network diagram, concept map, mind map, mockup, or wireframe whose structure benefits from draw.io. Do not trigger solely because the user says generic phrases such as “画图”“做个图”“配图”“示意图” or requests PNG/SVG/PDF output; simple note illustrations, hand-authored SVG/HTML, Markdown/ASCII diagrams, plots, and raster images may use more suitable non-draw.io approaches.
+description: "仅手动调用的 draw.io 图表生成、编辑、验证和导出技能。只有用户在当前请求中明确说“使用画图技能”或“用画图技能”，或者显式调用 `$drawio-diagram` 时才使用。不得因用户要求画图、做个图、配图、示意图、流程图、架构图、draw.io/.drawio 文件、可编辑图表或 PNG/SVG/PDF 输出而自动触发。"
 ---
 
 # Draw.io Diagram
 
 生成结构清晰、符号语义准确、可编辑且经过验证的图表。所有图表（包括思维导图和概念图）统一使用 draw.io 原生 `mxGraphModel` 格式，不使用 Mermaid、CSV 或其他绘图后端伪装目标格式。
 
+## 手动触发规则
+
+- 仅当用户在当前请求中明确说“使用画图技能”或“用画图技能”，或者显式调用 `$drawio-diagram` 时，才执行本技能。
+- 不从任务类型、目标格式、文件扩展名、上下文或先前轮次推断触发；用户只说“画图”“做个图”“流程图”“使用 draw.io”“创建 .drawio”等均不触发本技能。
+- 未满足手动触发条件时，不读取本技能的引用和脚本，不执行其流程；回到通用工作流，根据任务选择 SVG、HTML、Markdown/ASCII、绘图库或其他合适方法。
+- 手动触发只对当前请求有效，后续请求必须再次明确调用。
+- 用户明确要求“不使用画图技能”或指定其他实现方式时，立即退出本技能流程并遵从用户指定方式。
+
 ## 适用边界
 
-- 只有需求明确指向 draw.io、`.drawio`、可编辑图表源文件，或正式结构图类型明显适合 draw.io 时，才使用本技能。
-- “画图”“做个图”“配一张示意图”等通用表达只描述用户想要视觉结果，不代表指定 draw.io；先依据落位环境、目标格式和复杂度选择普通代码、手写 SVG、HTML/CSS、Markdown/ASCII、绘图库或图像生成。
-- 笔记内的小型概念示意、角度/坐标关系、公式辅助图等，若手写 SVG 能更直接地嵌入并保持清晰，应直接生成 SVG，不要为其强制建立 `.drawio` 源文件。
-- 用户明确要求“不使用画图技能”或指定其他实现方式时，立即退出本技能流程并遵从用户指定方式。
+- 手动触发后，使用本技能创建、编辑、验证、打开或导出 draw.io 图表。
+- 笔记内的小型概念示意、角度/坐标关系、公式辅助图等，即使已触发，也应先判断手写 SVG 是否更直接；只有用户确实需要 draw.io 后端时才建立 `.drawio` 源文件。
 
 ## 核心流程
 
