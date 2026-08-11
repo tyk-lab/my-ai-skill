@@ -1,16 +1,32 @@
 ---
 name: record-decisions
-description: "Record or explicitly retrieve durable conversation context: goals, alignment questions and answers, confirmed decisions, constraints, current status, open issues, and next actions. Use when the user explicitly asks to record the current conversation's key points, asks to review saved conversation notes, or invokes `$record-decisions`; never write during ordinary discussion."
+description: "Record or explicitly retrieve durable conversation context: goals, alignment questions and answers, confirmed decisions, constraints, current status, open issues, and next actions. Store project records in a resolved `.my/decision-log.md`. Use when the user explicitly asks to record the current conversation's key points, asks to review saved conversation notes, or invokes `$record-decisions`; never write during ordinary discussion."
 ---
 
 # 记录会话关键信息
 
 将后续继续对话所需的关键信息固化为简洁、可检索的快照：目标、对齐结论、约束、当前状态和下一步。
 
-- **默认写入当前项目目录**下的 `decision-log.md`（以当前工作目录为项目根），不再写入本技能所在的全局目录。
-- 只有当用户明确要求“记录到全局 decision-log”“跨项目记录”或类似表达时，才使用本技能目录下的 `decision-log.md`。此时必须在条目中记录**相关目录路径**，以便后续追溯该快照对应的项目或工作目录。
+- **默认写入当前项目范围内选定的 `.my/decision-log.md`**，不得再把项目记录写到项目根目录。
+- 只有当用户明确要求“记录到全局 decision-log”“跨项目记录”或类似表达时，才使用本技能目录根部的 `decision-log.md`。全局记录是项目 `.my/`规则的明确例外；条目中必须记录**相关目录路径**，以便后续追溯该快照对应的项目或工作目录。
 
 其中“当前有效上下文索引”可更新，历史快照只追加。
+
+## 保存位置解析
+
+以当前工作目录为项目范围根，按以下顺序解析项目日志位置：
+
+1. 若项目根存在 `./.my/`，固定使用 `./.my/decision-log.md`；即使子目录也有 `.my/`，仍以根目录为准。
+2. 若根目录没有 `.my/`，在项目范围内递归查找名称**恰为** `.my` 的目录。不得越出项目根、进入 `.git/` 或跟随会跳出项目的重解析点/符号链接。
+3. 找到一个或多个子目录 `.my/` 时，选择相对项目根层级最浅者；同层并列时按规范化相对路径升序选择第一个，确保多次调用结果一致。
+4. 完全找不到 `.my/` 时，创建项目根 `./.my/`，再使用 `./.my/decision-log.md`。
+5. 查阅、恢复、写入和回复路径都必须使用本次解析出的同一个文件，不得同时维护多份项目日志。
+
+兼容旧位置时：
+
+- 若旧的 `./decision-log.md`存在而新目标不存在，将旧文件完整迁移到选定的 `.my/decision-log.md`，不得重写历史。
+- 若旧位置和新目标同时存在，先把旧文件中目标文件没有的历史快照按原文追加，再按最新未取代快照更新索引；确认内容均已保留后才移除旧文件，禁止直接覆盖任一文件。
+- 显式全局记录固定使用本技能目录根部的 `decision-log.md`，不搜索、创建或使用 `.my/`。若短期兼容版本曾生成本技能目录的 `.my/decision-log.md`，将其按上述无损迁移规则迁回技能根；两处同时存在时先合并、确认，再移除 `.my/`中的旧副本。
 
 ## 触发边界
 
@@ -20,7 +36,7 @@ description: "Record or explicitly retrieve durable conversation context: goals,
 
 ## 工作流程
 
-1. 记录和查阅都使用当前项目目录下的 `decision-log.md`（路径为 `./decision-log.md`，相对当前工作目录）。恢复会话时先读取“当前有效上下文索引”，再读取索引中相关主题的最新历史快照及其取代关系；用户明确指定已完成主题时，再查阅对应历史。若项目尚无该文件，则新建。
+1. 先按“保存位置解析”确定唯一的 `.my/decision-log.md`。记录和查阅都使用该文件；恢复会话时先读取“当前有效上下文索引”，再读取索引中相关主题的最新历史快照及其取代关系；用户明确指定已完成主题时，再查阅对应历史。目标文件不存在时新建，旧位置存在时先执行无损迁移。
 2. 在用户触发记录后，从当前会话识别：目标与范围、已回答的对齐问题、已确认或暂定决定、条件与约束、当前状态与已完成结果、待处理问题、待澄清项和下一步。只记录后续会话需要复用的信息。
 3. 明确区分“已确认”“暂定”“待澄清”和“仅建议”。不把推测、逐轮聊天复述、一次性细节、完整敏感内容或凭据写入记录；必要时只保留脱敏的约束或引用位置。
 4. 为每个主题使用稳定的“主题 ID”（短小、唯一、后续更新不变）。读取 `decision-log.md`，按主题 ID 去重；状态推进或结论修正时追加新快照并填写“取代关系”，不要重写历史条目。
