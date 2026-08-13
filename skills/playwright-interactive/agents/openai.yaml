@@ -1,0 +1,4 @@
+interface:
+  display_name: "Playwright Interactive"
+  short_description: "Cross-agent browser and Electron QA"
+  default_prompt: "Use $playwright-interactive to test and visually verify a local web or Electron app with the available browser automation tools."
