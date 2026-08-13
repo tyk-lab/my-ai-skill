@@ -24,7 +24,7 @@ Evidence stays valid until the relevant implementation, configuration, dependenc
 
 | Claim | Minimum evidence |
 | --- | --- |
-| Requested implementation is present | Inspect the focused diff or changed artifact |
+| Requested implementation is present | Reuse an explicit successful write/edit result that identifies the target and applied change. If the result is absent or ambiguous, inspect the focused diff or changed artifact; for a new or untracked file, confirm existence and inspect or parse the relevant content. |
 | Tests pass | The applicable test command completes with no failures |
 | Build succeeds | The applicable build command exits successfully |
 | Bug fixed | The original reproduction or a targeted regression test passes |
@@ -33,6 +33,8 @@ Evidence stays valid until the relevant implementation, configuration, dependenc
 
 Do not substitute one kind of evidence for another: a clean diff does not prove behavior, and a passing linter does not prove a build.
 
+An explicit write/edit success proves that the reported change was applied; it does not by itself prove behavior or full requirement compliance. Use the corresponding behavioral or acceptance evidence for those stronger claims.
+
 ## Choose proportionate verification
 
 - Documentation or low-risk metadata: inspect the focused diff and validate the relevant format or link when applicable.
@@ -40,6 +42,8 @@ Do not substitute one kind of evidence for another: a clean diff does not prove 
 - Behavior change or bug fix: run the original reproduction or a targeted behavioral/regression test. Lint, type-check, and build results are supplementary evidence, not proof of behavior.
 - Cross-cutting, security-sensitive, release-bound, or dependency/configuration change: run the targeted checks plus the project’s broader required validation.
 - Hardware, third-party service, or manual UI behavior: perform the available check and explicitly name the unverified portion and residual risk.
+
+Prefer existing validation commands and tests. Creating or updating a regression test is part of implementation when it has lasting value and is within scope; do not generate persistent tests, fixtures, snapshots, or test data merely to close this completion gate. If a temporary validation artifact is genuinely necessary, follow active project instructions for its location, tracking, cleanup, and confirmation of removal.
 
 Partial verification is useful evidence with limited scope. Report its scope; do not extrapolate it into a stronger claim.
 

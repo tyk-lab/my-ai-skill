@@ -53,22 +53,23 @@ Rules: `questions` is a required array (wrap even a single question); `header` �
 
 **Understanding the idea:**
 - Check out the current project state first (files, docs, recent commits)
-- Use the question tool (see "Question Tool" above) to ask 3-5 structured questions that clarify:
+- Ask only unresolved questions whose answers could materially change the outcome. Usually ask 1-3 structured questions; use 3-5 only when several independent material uncertainties remain:
   - Purpose and user goals
   - Scope and constraints
   - Success criteria and acceptance
   - Integration points with existing features
 - Structure questions with multiple choice, numbered format, and fast-path options (e.g., "Reply: defaults" or "1a 2b 3c")
 - Focus on understanding: purpose, constraints, success criteria, and why this matters now
+- When a low-risk detail can be inferred without changing acceptance criteria or scope, state the assumption and proceed when active instructions allow it.
 
 **⛔ Gate: Confirm understanding before proceeding**
 
-Do not move to design or implementation until you can answer all three:
+Do not move to design or implementation while any of these three remains materially unclear enough to produce meaningfully different outcomes:
 - **Goal + motivation:** What is the user trying to achieve, and why does it matter now? (Not just "add a feature" — what problem does it solve?)
 - **Done criteria:** What would the user check to know this is working correctly?
 - **Scope + constraints:** What is explicitly in or out, and what hard constraints apply?
 
-"Confirmed" means you can write a 2-sentence summary that the user would agree is correct — not just that they answered your questions. If their answers are vague ("make it better", "just make it work"), that counts as unclear — ask a follow-up that rephrases the question more concretely. Do not guess or assume.
+"Confirmed" means you can write a 2-sentence summary that the user would agree is correct — not just that they answered your questions. If a vague answer ("make it better", "just make it work") leaves a material decision unresolved, ask a follow-up that rephrases the question more concretely. Do not guess material goals, scope, or acceptance criteria; make low-risk assumptions explicit when active instructions permit them.
 
 If two rounds of questions haven't resolved one of these three, surface the ambiguity explicitly: "I'm still unclear on [X]. Without knowing this, the design could go in very different directions. Can you give me a concrete example?"
 
@@ -99,12 +100,14 @@ Before proposing anything, scan the answers for internal conflicts — e.g., "mi
 - Commit the design document to git if user confirms
 
 **Implementation (if continuing):**
-- Ask: "Ready to move on to implementation?"
+- If the original request was consultation or design-only, ask: "Ready to move on to implementation?"
+- If the user already requested implementation, or approved a concrete option that active instructions treat as implementation authorization, summarize the agreed direction and proceed without asking for the same approval again.
+- If the design materially expands scope or introduces a high-risk action, follow the active approval rules before proceeding.
 - Hand off the agreed design as the basis for planning and coding
 
 ## Key Principles
 
-- **Use the question tool strategically** - Batch 3-5 related questions to deepen understanding across multiple domains at once
+- **Use the question tool strategically** - Ask the smallest useful batch, normally 1-3 questions; use 3-5 only for several independent material uncertainties
 - **Open-ended first, multiple-choice to confirm** - When the user hasn't formed an opinion yet, ask open-ended questions to discover intent. Once direction is clearer, switch to multiple-choice to efficiently pin down specifics.
 - **Structure for clarity** - Numbered questions, lettered options, default recommendations, compact reply format
 - **Resolve contradictions before designing** - If answers conflict, surface the tension explicitly and resolve it before proposing anything
