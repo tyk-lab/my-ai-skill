@@ -53,6 +53,7 @@ Total: 100 points across 8 criteria. Weights match SKILL.md assessment checklist
 - No filler or obvious info
 - Each line adds value
 - No redundancy with code comments
+- No dated/current project status that belongs in a dynamic progress or updates file
 
 **5 points**: Mostly concise, some padding or verbose sections
 
@@ -103,6 +104,8 @@ Total: 100 points across 8 criteria. Weights match SKILL.md assessment checklist
 
 **10 points**: No conflicts or duplications across files that the selected tool surface can load together (or only one applicable context file exists)
 
+- AI instruction files link to, rather than mirror, the authoritative dynamic progress/update files
+
 **5 points**: Minor overlap or one conflicting rule
 
 **0 points**: Multiple conflicts or contradictory instructions across files
@@ -143,3 +146,5 @@ Total: 100 points across 8 criteria. Weights match SKILL.md assessment checklist
 - Generic advice not specific to the project
 - "TODO" items never completed
 - Duplicate info across multiple context files
+- Dated/current state in AI instructions: current phase, candidate/hash, run result/path, test count, blocker, consumed authorization, or next action
+- The same dynamic state copied across `AGENTS.md`, `PROGRESS.md`, and `PROJECT_UPDATES.md`, creating multiple authorities

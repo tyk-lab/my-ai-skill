@@ -1,6 +1,7 @@
 ---
 name: ai-context-file-improver
-description: Audit and improve AI project context files across repositories. Use when the user asks to check, audit, update, improve, or fix project context/instruction files for any AI coding tool — including CLAUDE.md (Claude Code), AGENTS.md (OpenCode/Codex), .cursorrules (Cursor), .github/copilot-instructions.md (GitHub Copilot), .windsurfrules (Windsurf), and similar. Also triggers on "project memory optimization", "AI context file maintenance", or "update my AI rules".
+description: >-
+  Audit and improve AI project context files across repositories. Use when the user asks to check, audit, update, improve, or fix project context/instruction files for any AI coding tool — including CLAUDE.md (Claude Code), AGENTS.md (OpenCode/Codex), .cursorrules (Cursor), .github/copilot-instructions.md (GitHub Copilot), .windsurfrules (Windsurf), and similar. Enforces stable-vs-dynamic ownership: dated current status belongs in PROGRESS/PROJECT_UPDATES, not AI instruction files. Also triggers on "project memory optimization", "AI context file maintenance", or "update my AI rules".
 ---
 
 # AI Context File Improver
@@ -119,6 +120,8 @@ When multiple context files are found, compare only files that can be loaded tog
 3. **Scope misplacement** — project-specific rules in global files, or user preference rules in shared project files.
    → Recommend moving to the correct scope.
 
+   Dated/current project state is also scope misplacement even when accurate: current phase, candidate identity/hash, run outcome/path, test counts, blockers, authorization consumption, and next actions belong in a dynamic progress/update file, not `AGENTS.md` or equivalent instruction files.
+
 4. **Coverage gaps introduced by split** — a rule exists in one tool's file but is missing from another tool's file for the same project.
    → Flag only if the gap is likely to cause inconsistent AI behavior across tools.
 
@@ -192,6 +195,8 @@ After outputting the quality report, draft targeted diffs. Do not edit yet.
    - Testing approaches that work
    - Configuration quirks
 
+   **Dynamic-state ownership is a hard rule** — AI instruction files contain stable, high-frequency operational constraints, architecture pointers, commands, and long-lived safety invariants. Route AI handoff state to `PROGRESS.md`, human-facing dated summaries to `PROJECT_UPDATES.md`, formal routes/acceptance to plans, and raw evidence to runs/experiments. Keep only a one-line pointer in the context file; never copy the current values.
+
 2. **Keep it minimal** — avoid:
    - Restating what's obvious from the code
    - Generic best practices not specific to the project
@@ -248,6 +253,7 @@ See [references/templates.md](references/templates.md) for context file template
 9. **Conflicting rules**: Different files give contradictory instructions on the same topic
 10. **Scope misplacement**: Project rules in global file, or personal preferences in shared file
 11. **Verbose rules**: A low-value rule explained in 5+ lines that could be one line or a pointer without loss of clarity
+12. **Dynamic state in instructions**: Dates, current phases, candidates, run results, test counts, blockers, or next steps copied into AGENTS/CLAUDE/rules instead of linked from their dynamic authority
 
 ## Tips to Share with Users
 
@@ -266,6 +272,7 @@ When presenting recommendations, remind users:
 - Actionable commands that can be copy-pasted
 - Project-specific patterns, not generic advice
 - Non-obvious gotchas and warnings
+- Stable information only; link to dynamic progress/update authorities instead of copying current state
 
 **Recommended sections** (use only what's relevant):
 - Commands (build, test, dev, lint)

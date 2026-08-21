@@ -2,7 +2,7 @@
 
 ## Core Principle
 
-Only add information that will genuinely help the AI assistant in future sessions. The context window is precious — every line must earn its place.
+Only add stable information that will genuinely help the AI assistant in future sessions. The context window is precious — every line must earn its place. Current project state must stay in its dynamic authority and be linked, not copied, from AI instruction files.
 
 ## What TO Add
 
@@ -106,6 +106,24 @@ Good:
 Auth: JWT with HS256, tokens in `Authorization: Bearer <token>` header.
 ```
 
+### 5. Dated or Current Project State
+
+Bad:
+```markdown
+## Current status (2026-08-14)
+- Candidate Z failed; T2 is blocked; next run is AA.
+```
+
+This becomes stale and creates a second authority.
+
+Good:
+```markdown
+## Dynamic state
+- Read `.project-plans/PROGRESS.md` before acting; human-facing updates are in `.project-handbook/PROJECT_UPDATES.md`.
+```
+
+Keep stable safety invariants in the instruction file, but route current phase, candidates, hashes, run outcomes, test counts, blockers, consumed authorization, and next actions to their dynamic owners.
+
 ## Diff Format for Updates
 
 For each suggested change:
@@ -149,3 +167,4 @@ Before finalizing an update, verify:
 - [ ] File paths are accurate
 - [ ] Would the AI assistant find this helpful in a new session?
 - [ ] Is this the most concise way to express the info?
+- [ ] No dated/current state is copied into an AI instruction file; it links to the dynamic authority instead
