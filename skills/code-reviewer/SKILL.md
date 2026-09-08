@@ -47,6 +47,19 @@ Check for:
 - **Compatibility** — do public APIs, schemas, configuration, IPC, and persisted data remain compatible where required?
 - **Test coverage** — are new paths tested? are edge cases covered?
 
+Use two review layers so inexpensive convention checks do not crowd out subtle
+behavioral defects:
+
+- **Mechanical/convention layer** — run or inspect the project formatter, linter,
+  type checker, and explicit repository conventions. Report failures separately.
+  A naming or formatting issue belongs in the main findings only when it can
+  cause misuse, semantic ambiguity, contract breakage, or a safety mistake.
+- **Behavioral layer** — prioritize reachable but easy-to-miss defects in control
+  flow, state transitions, boundary values, failure recovery, cleanup, ordering,
+  cross-layer limits, authorization, and irreversible side effects. Trace these
+  through the final externally observable result instead of stopping at an
+  intermediate flag or configured value.
+
 ## Evidence Gate
 
 Report a finding only when the reviewed change introduces or worsens a concrete
@@ -54,9 +67,27 @@ problem, or violates a requirement needed by the change. Verify the execution
 path or invariant and cite the most relevant `file:line`. Unless the user requests
 a broader audit, omit unrelated pre-existing problems.
 
+For subtle issues, actively test competing explanations and boundary sequences,
+but keep the reporting threshold unchanged: state the reachable trigger, the
+violated contract or invariant, the actual outcome, and the material impact.
+Review depth may increase without increasing low-value output.
+
 Do not promote unsupported suspicions to findings. Put important uncertainties
 caused by unavailable context or unrun validation under **Unverified risks**, with
-the missing evidence stated explicitly.
+the missing evidence stated explicitly. Include an unverified risk only when the
+missing evidence could change a merge, release, deployment, or safety decision.
+
+Missing tests are not automatically findings. Report a test gap when it leaves a
+demonstrated defect without regression coverage, or when a critical safety/data
+invariant lacks the minimum evidence needed for the decision at hand.
+
+Prioritize review effort and output by **impact × reachability × confidence**.
+Break ties using blast radius and irreversibility. Cover the highest-risk control
+and data paths before spending time on bounded convention issues. A high-quality
+finding is concise but decision-ready: it identifies the trigger, evidence,
+violated invariant, observable impact, and smallest safe fix. Do not cap the
+number of substantiated Critical/High findings, and do not dilute them with a long
+tail of optional observations.
 
 ## Phase 3: Output Findings
 
@@ -74,17 +105,22 @@ Group findings by severity. Only include what was actually found — omit empty 
 ### 🟡 Medium (concrete but bounded risk)
 - [file:line] Issue — trigger/path; impact; smallest safe fix
 
-### 🔵 Low (optional, non-blocking)
-- [file:line] Suggestion
+### Convention/tooling results
+- Formatter, linter, type-checker, or explicit project-rule failures
 
 ### Unverified risks
 - Missing evidence and the decision it prevents
 ```
 
-Omit empty sections. Order findings by severity, then by likely impact. Do not pad
+Omit empty sections. Order findings by severity, then by confidence and likely
+impact. Deduplicate findings with the same root cause. Do not pad
 the review with praise or generic advice. If no issues are found, say: "No blocking
 findings found in the reviewed scope." Do not equate a clean static review with
 successful tests, CI, deployment validation, or merge readiness.
+
+Do not output purely optional Low findings by default. Include them only when the
+user explicitly requests style, maintainability, or cleanup feedback, and keep
+them separate from correctness and risk findings.
 
 ## Phase 4: Recommend Next Step
 
@@ -105,6 +141,7 @@ successful tests, CI, deployment validation, or merge readiness.
 ## What NOT to flag
 
 - Style preferences already handled by a linter
+- Naming or formatting preferences that cannot change semantics or cause misuse
 - Generic best-practice advice not specific to this change
 - Hypothetical future issues with no current evidence
 - Pre-existing problems unrelated to and not worsened by the reviewed change
