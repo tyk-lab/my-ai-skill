@@ -15,11 +15,20 @@
 
 要求：
 
-- 所有图元 ID 唯一，普通图元使用 `parent="1"`。
+- 所有图元 ID 唯一。顶层图元使用 `parent="1"`，分组成员的 `parent` 指向所属容器，不强制所有图元平铺到基础层。
 - 每条边包含子元素 `<mxGeometry relative="1" as="geometry"/>`。
 - 属性值转义 `&`、`<`、`>` 和 `"`；输出 XML 中不写注释。
 - 反馈、支线和多路汇入显式设置 `exitX/exitY/entryX/entryY`；必要时在 `mxGeometry` 中加入少量 `mxPoint` 拐点。
 - 使用正交边时检查自动路由结果，不让线穿过节点正文。
+
+## 真实分组与坐标
+
+- 整体操作单元必须建立真实父子层级：标题、成员模块和内部边归属容器。纯装饰背景明确作为背景，不代替分组。
+- 子节点的 `mxGeometry.x/y` 相对父容器。已有节点换父层时，保留绝对位置，再减去新父层的绝对原点；嵌套层级逐级换算。
+- 内部边放在两端的最近公共容器；跨组边放在最近公共祖先层，`source/target` 仍连接真实节点。路径控制点相对边的父层，换父层时同步转换；标签相对位置及 `offset` 不当作绝对路径点转换。
+- 容器可用 `container=1;collapsible=0;`；未设计折叠行为时不自动启用折叠。分组移动应带动成员；边界缩放不自动等于内容等比缩放，需要缩放/折叠时明确所需行为并另验，不承诺未验证的联动。
+
+例如父容器在 `(200,150)`，子节点的局部坐标为 `(24,56)`，则子节点绝对坐标为 `(224,206)`。移动父容器时子节点局部坐标不变。
 
 ## CLI 检测
 
@@ -55,26 +64,51 @@ CLI 不可用时保留 `.drawio` 源文件，不承诺导出成功。JPG 不支�
 
 ## 验证
 
-1. 用 XML 解析器读取 `.drawio`，确认根节点、基础层、唯一 ID 和有效边引用。
-2. 导出后确认目标文件存在且大小非零。
-3. PNG、SVG 或 PDF 使用 `-e` 时，确认可由 draw.io 重新打开为可编辑图表。
-4. 打开或渲染结果，检查空白页、裁切、文本溢出、箭头方向和连线交叉。
+1. 解析 XML，确认根结构、基础层、唯一 ID、有效父引用、无父子循环及有效边引用；分组成员符合预定归属。
+2. 已有图重设分组后，确认成员绝对位置及边的端点引用不变，内部边与跨组边的父层正确。
+3. 在临时副本中移动一个真实分组，确认成员、标题与内部线随动，外部节点不动，跨组线仍连接目标。可用编辑器移动，或只改变副本父容器坐标再渲染；后者只证明保存模型的移动效果，不声称已做鼠标交互验证。
+4. 导出后确认文件存在且非空；使用 `-e` 时确认可重新打开为可编辑图表。未验证时不声称嵌入编辑性通过。
+5. 按 [视觉验收](visual-language.md#渲染后的视觉验收) 检查最终渲染与需求拓扑；确认路径、扩展名和实际格式相符。临时移动副本不作为交付图。
 
 成功导出并确认嵌入数据后，只有在用户明确要求不保留源文件时才移除中间 `.drawio`。
 
-## 文字可读性与防重叠
+## 文字与连线实现
 
-节点样式基线：
+字号、间距、配色和尺寸估算遵循 [视觉规则](visual-language.md)，此处仅定义 draw.io 实现。
 
-```xml
-<mxCell id="n1" value="节点文字" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontColor=#1A1A1A;fontSize=16;spacingLeft=10;spacingRight=10;spacingTop=8;spacingBottom=8;" vertex="1" parent="1">
+- 文本使用 `whiteSpace=wrap;html=1;`，显式设置 `fontSize`。独立标题或说明对象绑定所属模块；简单节点可直接用已转义的 HTML 标题与换行。
+- 节点与边样式分开构造。边标签以 `spacing=0;labelWidth=80;labelBackgroundColor=#FFFFFF;` 起步，按短语调整宽度，按所在区域调整背景色，避免中文逐字竖排。
+- 边不继承节点大内边距，不混入独立标签节点的 `edgeLabel` 样式。水平标签可用几何 `offset` 放在线上方；拐点、竖线及路径变化后以渲染为准。
+- 几何重叠检查先解析父层绝对坐标，排除祖先容器与子节点的有意包含；不直接比较不同父层的局部坐标。
+
+## 可复用的样式片段
+
+以下是起点；节点内容、尺寸和端口仍按拓扑确定。标题可用 HTML 加粗，并在序列化 XML 时转义；不依赖外部字体或图标。
+
+控制职责模块示例（其他职责替换填充与描边色，参照 visual-language.md 的职责色表）：
+
+```text
+rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#EFF6FF;strokeColor=#2563EB;strokeWidth=1.25;fontColor=#0F172A;fontFamily=Microsoft YaHei;fontSize=16;align=left;verticalAlign=middle;spacing=16;shadow=0;
 ```
 
-- 尺寸估算：宽度 ≥ 最长行字数 × 字号（中文 1.0×、英文 0.55×）+ `spacingLeft` + `spacingRight`；高度 ≥ 行数 × 字号 × 1.4 + `spacingTop` + `spacingBottom`。文字多的节点先换行再加高，不把一行拉到几百像素宽。
-- 字号必须显式设置，不省略 `fontSize`（drawio 默认 11 偏小）：正文默认 16、最小 14，节点标题 18～20，图级标题 20～24，边标签默认 14、不低于 14；`fontColor` 与 `fillColor` 高对比，避免 `#999` 级浅灰字配浅色底。
-- 文字不得超出框：按尺寸估算公式核算每个节点，确保换行后的全部文字（含内边距）完整落在节点包围盒内；估算高度超出节点高度时加大节点或拆分文字，不允许缩字号到 14 以下硬塞。
-- 所有文本节点和边标签必须带 `whiteSpace=wrap;html=1;`；关闭换行的节点（如纯图标）不放正文。
-- 边标签样式显式带 `fontSize=14;labelBackgroundColor=#FFFFFF;edgeLabel;`，白底防止标签被连线穿过遮挡；长边标签用 `mxGeometry` 的 `x/y` 偏移避开拐点与交叉；同一节点的多条出边标签分别靠近各自线路。
-- 边标签不得遮挡其他元素：与节点、箭头、其他标签保持 ≥ 10px 间隙；标签过长时精简文字或把说明移入节点/注释框，不把大段文字压在线上。
-- 间距下限：同级节点水平 ≥ 60px、垂直 ≥ 40px；反馈通道 ≥ 40px；容器（`container=1`）内边距 ≥ 20px、顶部标题区 ≥ 30px。
-- 生成后按 `mxGeometry` 包围盒两两检查重叠：节点-节点、节点-边标签、标签-连线。发现重叠时优先调整坐标和尺寸，不允许用缩字号、删文字的方式硬塞。
+同职责中的核心模块保留职责色，可适度加强描边（替换原值，不堆叠冲突属性）：
+
+```text
+strokeWidth=2;
+```
+
+主链边（不要与节点样式共用内边距）：
+
+```text
+edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;strokeColor=#475569;strokeWidth=1.75;fontColor=#334155;fontFamily=Microsoft YaHei;fontSize=14;whiteSpace=wrap;html=1;spacing=0;labelWidth=80;labelBackgroundColor=#FFFFFF;
+```
+
+水平边的短标签可先向上移 14px，给箭头和文字各自留出空间；正交边路径变化后重新检查，不把偏移值机械用于竖线：
+
+```xml
+<mxGeometry relative="1" as="geometry">
+  <mxPoint x="0" y="-14" as="offset"/>
+</mxGeometry>
+```
+
+边的 `exitX/exitY/entryX/entryY` 和转折 `mxPoint` 必须按具体关系填写。标签比线段宽时优先重排端口或标签，不仅扩大 `labelWidth`；该属性只控制文字布局，不会增加两个节点之间的实际距离。

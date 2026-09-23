@@ -5,7 +5,7 @@ allowed-tools: Read, Edit, Glob
 
 # Revise AI Context Files
 
-Review this session for learnings that would help the AI assistant work more effectively in this codebase. Update the relevant context file(s) with discovered context.
+Review this session for durable learnings that would help future work. Before proceeding, read [../SKILL.md](../SKILL.md) and apply its **Shared Execution Rules**, discovery boundaries, loading analysis, and content verification. This entrypoint shortens the report, not the authorization or dynamic-state rules. If no useful stable learning remains, report that no update is needed.
 
 ## Step 1: Reflect
 
@@ -19,42 +19,9 @@ What context was missing that would have helped the AI work more effectively?
 
 ## Step 2: Find Context Files
 
-Use the command style that fits the current environment:
+Use **Phase 1: Discovery** in [../SKILL.md](../SKILL.md); do not maintain a separate filename list or discovery command here. With only Read/Glob tools, use equivalent bounded discovery including hidden and ignored candidates and the same exclusions; report tool coverage limitations.
 
-```bash
-# rg (preferred)
-rg --files -g 'CLAUDE.md' -g '.claude.local.md' -g 'AGENTS.md' -g 'AGENTS.override.md' \
-  -g '.cursorrules' -g '.windsurfrules' -g '.github/copilot-instructions.md' \
-  -g '.github/instructions/**/*.instructions.md' -g '**/.cursor/rules/**/*.mdc' \
-  -g '!node_modules/**' -g '!.git/**'
-
-# POSIX fallback
-find . \( \
-  -name "CLAUDE.md" -o -name ".claude.local.md" \
-  -o -name "AGENTS.md" -o -name "AGENTS.override.md" \
-  -o -name ".cursorrules" \
-  -o -name ".windsurfrules" \
-  -o -name "copilot-instructions.md" \
-  -o -path "*/.cursor/rules/*.mdc" \
-  -o -path "*/.github/instructions/*.instructions.md" \
-\) -not -path "*/node_modules/*" -not -path "*/.git/*" 2>/dev/null
-```
-
-```powershell
-# PowerShell fallback
-Get-ChildItem -Recurse -Force -File |
-  Where-Object {
-    $_.FullName -notmatch '\\(node_modules|\.git|dist|build)\\' -and
-    ($_.Name -in @('CLAUDE.md', '.claude.local.md', 'AGENTS.md', 'AGENTS.override.md', '.cursorrules', '.windsurfrules', 'copilot-instructions.md') -or
-     $_.FullName -match '[\\/]\.cursor[\\/]rules[\\/].+\.mdc$' -or
-     $_.FullName -match '[\\/]\.github[\\/]instructions[\\/].+\.instructions\.md$')
-  }
-```
-
-Decide where each addition belongs:
-
-- Shared file (e.g., `CLAUDE.md`, `AGENTS.md`, `.cursorrules`) — team-shared, checked into git
-- Local override (e.g., `.claude.local.md`) — personal/local only (gitignored)
+Select the file whose loading scope reaches the intended task. Shared project rules and personal local overrides have different owners; honor the user's existing exclusion policy. Route current run outcomes, blockers, counts, and next actions to existing dynamic records, not instruction files.
 
 ## Step 3: Draft Additions
 
@@ -85,6 +52,6 @@ For each addition:
 
 Do not edit yet. First show every proposed diff.
 
-## Step 5: Apply with One Approval
+## Step 5: Apply Within Authorization
 
-Ask once whether to apply the displayed diffs. Only edit files the user approves, then verify the write with a targeted read or `git diff`.
+Follow **Shared Execution Rules** in [../SKILL.md](../SKILL.md): reuse existing implementation approval; otherwise ask once for the displayed diffs. Apply only authorized changes and verify content with a targeted read or diff. Preserve explicit constraints and exceptions when simplifying.

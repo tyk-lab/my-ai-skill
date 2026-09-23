@@ -1,6 +1,6 @@
 ---
 name: brainstorming
-description: "TRIGGER when: user requests a new feature, significant architecture change, or complex multi-step task where scope/design/direction is unclear. Explores intent and requirements through structured questioning before implementation. SKIP for: bug fixes with clear steps, single-file changes, tasks with a detailed spec already provided, or minor ambiguity that a single clarifying question resolves."
+description: "Explore requirements and design when unresolved decisions materially affect goals, acceptance criteria, scope, or technical direction, or when the user explicitly requests design exploration. Do not trigger solely because work is a new feature, complex, or spans multiple files. Skip when the direction is already clear or a single clarification suffices."
 ---
 
 # Brainstorming Ideas Into Designs
@@ -9,7 +9,7 @@ description: "TRIGGER when: user requests a new feature, significant architectur
 
 Help turn ideas into fully formed designs and specs through structured collaborative dialogue using the question tool for deeper exploration.
 
-Start by understanding the current project context, then systematically clarify requirements and design intent. Use the question tool to gather batches of related questions, deepening understanding before moving to design phases. Once you understand what you're building, present the design in small sections (120-250 words), checking after each section whether it looks right so far.
+Understand the relevant project context and clarify only material unresolved decisions. Present a compact design once the goal, acceptance criteria, and scope are clear. Pause only for decisions that affect subsequent work; do not require confirmation of every section.
 
 ## Question Tool
 
@@ -37,17 +37,15 @@ Rules: `questions` is a required array (wrap even a single question); `header` �
 
 ## When to Use
 
-- New feature development requiring design decisions
-- Significant changes to existing architecture or behavior
-- Tasks with multiple viable approaches needing exploration
-- Medium/high-complexity work where scope, design, or direction is unclear
+- Material uncertainty about goals, acceptance criteria, scope, or technical direction
+- Multiple viable approaches with tradeoffs that require user input
+- An explicit request to explore requirements or design alternatives
 
 ## When NOT to Use
 
 - Simple/low-risk tasks with minor ambiguity → just ask one clarifying question and proceed
-- Bug fixes with clear reproduction steps
-- Tasks where the user provided a detailed spec or step-by-step instructions
-- Single-file, obvious changes (rename, typo fix, config tweak)
+- Tasks whose goal, acceptance criteria, scope, and implementation direction are already clear
+- Obvious changes (rename, typo fix, config tweak); file count alone does not determine whether design exploration is needed
 
 ## The Process
 
@@ -59,13 +57,13 @@ Rules: `questions` is a required array (wrap even a single question); `header` �
   - Success criteria and acceptance
   - Integration points with existing features
 - Structure questions with multiple choice, numbered format, and fast-path options (e.g., "Reply: defaults" or "1a 2b 3c")
-- Focus on understanding: purpose, constraints, success criteria, and why this matters now
+- Focus on purpose, constraints, and success criteria; ask about motivation or timing only when it changes a design decision
 - When a low-risk detail can be inferred without changing acceptance criteria or scope, state the assumption and proceed when active instructions allow it.
 
 **⛔ Gate: Confirm understanding before proceeding**
 
 Do not move to design or implementation while any of these three remains materially unclear enough to produce meaningfully different outcomes:
-- **Goal + motivation:** What is the user trying to achieve, and why does it matter now? (Not just "add a feature" — what problem does it solve?)
+- **Goal:** What outcome or problem should the work address? Missing background motivation alone is not a blocker.
 - **Done criteria:** What would the user check to know this is working correctly?
 - **Scope + constraints:** What is explicitly in or out, and what hard constraints apply?
 
@@ -87,17 +85,16 @@ Before proposing anything, scan the answers for internal conflicts — e.g., "mi
 
 **Presenting the design:**
 - Once you believe you understand what you're building, present the design
-- Break it into small sections (typically 120-250 words; go longer only for complex sections), and ask after each section whether it looks right so far
-- **Scope the coverage to the task complexity.** Always cover architecture and data flow. Add components, error handling, testing, and integration only if they are genuinely non-obvious for the task at hand — don't cover all six for a simple feature.
+- Present a small design together; split a complex design around consequential decisions. Wait for input only when an unresolved decision affects the next step, and reuse prior confirmations.
+- Cover architecture, data flow, components, error handling, testing, or integration only where they matter to this task's decisions or acceptance. Do not fill sections merely to satisfy a template.
 - If the user says a section is wrong, ask one targeted question to identify the divergence, then revise. If after two corrections a section still doesn't land, step back: "It sounds like we may have a different picture of [X] — can you describe what you had in mind?" Don't keep iterating on assumptions.
 - Be ready to go back and clarify if something doesn't make sense
 
 ## After the Design
 
 **Documentation (if user requests):**
-- Ask the user if they want the design documented and where to save it
-- Default location: `docs/plans/YYYY-MM-DD-<topic>-design.md`
-- Commit the design document to git if user confirms
+- Create a design document only when requested, using the specified location or a suitable existing project directory; ask only if the location materially matters and cannot be inferred.
+- Approval of a design or permission to save it is not permission to commit. Follow the active Git authorization rules.
 
 **Implementation (if continuing):**
 - If the original request was consultation or design-only, ask: "Ready to move on to implementation?"
@@ -113,7 +110,7 @@ Before proposing anything, scan the answers for internal conflicts — e.g., "mi
 - **Resolve contradictions before designing** - If answers conflict, surface the tension explicitly and resolve it before proposing anything
 - **YAGNI ruthlessly** - Remove unnecessary features from all designs
 - **Explore alternatives proportionally** - Provide multiple options when tradeoffs are real; avoid forced option lists when one direction is clearly dominant
-- **Incremental validation** - Present design in sections, validate each
+- **Decision-focused validation** - Confirm consequential unresolved choices, not every section
 - **Be flexible** - Go back and clarify when something doesn't make sense
 - **Fast-path responses** - Example: "Reply: defaults" to accept all recommendations, or "1a 2c 3b" for specific choices
 

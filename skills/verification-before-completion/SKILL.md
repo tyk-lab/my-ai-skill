@@ -14,8 +14,8 @@ A material change alters a requested deliverable or its observable behavior: for
 ## Workflow
 
 1. List the completion claims you will make.
-2. Select the smallest fresh evidence that directly supports each claim.
-3. Run or inspect that evidence after the latest relevant change.
+2. Select the smallest currently valid evidence that directly supports each claim, including evidence already gathered during implementation or review.
+3. Reuse evidence covering the latest relevant state; run additional checks only when coverage is insufficient, relevant inputs changed, or results are ambiguous.
 4. Report the result, plus anything still unverified.
 
 Evidence stays valid until the relevant implementation, configuration, dependency, test target, or validation environment changes. A validation environment change means a relevant runtime, toolchain, dependency set, target service, or test configuration change—not an unrelated file, chat message, or elapsed time.
@@ -40,12 +40,14 @@ An explicit write/edit success proves that the reported change was applied; it d
 - Documentation or low-risk metadata: inspect the focused diff and validate the relevant format or link when applicable.
 - Localized code change with no behavior change: run the nearest relevant lint, type-check, build, or targeted test.
 - Behavior change or bug fix: run the original reproduction or a targeted behavioral/regression test. Lint, type-check, and build results are supplementary evidence, not proof of behavior.
-- Cross-cutting, security-sensitive, release-bound, or dependency/configuration change: run the targeted checks plus the project’s broader required validation.
+- Cross-cutting, security-sensitive, or release-bound change: run targeted checks and broader validation warranted by the impact or required by the project. Size dependency/configuration validation by actual behavioral impact and risk; the file category alone does not require a broader test run.
 - Hardware, third-party service, or manual UI behavior: perform the available check and explicitly name the unverified portion and residual risk.
 
 Prefer existing validation commands and tests. Creating or updating a regression test is part of implementation when it has lasting value and is within scope; do not generate persistent tests, fixtures, snapshots, or test data merely to close this completion gate. If a temporary validation artifact is genuinely necessary, follow active project instructions for its location, tracking, cleanup, and confirmation of removal.
 
 Partial verification is useful evidence with limited scope. Report its scope; do not extrapolate it into a stronger claim.
+
+A failed or unavailable check does not by itself prove that the deliverable is defective. Distinguish an observed behavior failure from a validation setup failure or missing evidence. Report what the result establishes and what remains unknown; do not turn an inability to verify success into a confirmed defect or root-cause claim. Likewise, a passing check supports only the behavior and conditions it covers, not the absence of all defects.
 
 ## Reporting
 
@@ -62,5 +64,5 @@ Do not use bare “complete”. Say “implementation complete” only when the 
 
 - Planning, design discussion, or explaining code
 - Read-only investigation or review
-- Intermediate progress updates such as “I found the cause” or “the edit is in progress”
+- Intermediate progress updates that make no completion claim, such as “the edit is in progress”
 - A request that made no material change and does not assert a deliverable is complete

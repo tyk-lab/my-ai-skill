@@ -8,18 +8,27 @@ description: >-
 
 Audit, evaluate, and improve AI project context files to ensure your AI coding assistant has optimal project knowledge — regardless of which tool you use.
 
-**This skill can write to project-level context files inside the current repository.** After presenting a quality report and getting user approval, it updates files with targeted improvements. Global user files are audit-only unless a future version of this skill explicitly says otherwise.
+**This skill can write to project-level context files inside the current repository within the user's authorization.** Global user files are audit-only.
+
+## Shared Execution Rules
+
+These rules also apply to the lightweight workflow in `commands/revise-ai-context-files.md`.
+
+- **Honor scope and authorization.** Audit requests are read-only. For requested implementation or an already approved proposal, proceed within that scope without asking again. Otherwise show proposed diffs and obtain approval before editing. No findings is a valid result; do not manufacture additions.
+- **Preserve behavior when simplifying.** Retain explicit requirements, prohibitions, exceptions, safety conditions, and authorization boundaries. Do not delete them because a model should know them or to meet a line target. Consolidate duplicates only when the retained rule still reaches every intended task.
+- **Keep dynamic state separate.** Current phases, candidates/hashes, run results, test counts, blockers, consumed authorization, and next actions belong in the project's existing progress, plan, or evidence records. Keep stable constraints and useful pointers in instruction files. `PROGRESS.md` and `PROJECT_UPDATES.md` are examples, not mandatory filenames; do not create a new documentation structure just to satisfy this skill.
+- **Verify content, not just status.** Use a focused diff, relevant content read, or format parser after editing. `git status` alone does not prove correct content. Distinguish static inspection from commands actually executed; do not run builds, installs, migrations, or deployments merely to audit their documentation.
 
 ## Supported File Types
 
 | Tool | Project-level | Global-level (audit-only) |
 |------|--------------|---------------------------|
-| Claude Code | `CLAUDE.md`, `.claude.local.md` | `~/.claude/CLAUDE.md` |
+| Claude Code | `CLAUDE.md`, `.claude/CLAUDE.md`, `CLAUDE.local.md`, `.claude/rules/**/*.md` | `~/.claude/CLAUDE.md`, `~/.claude/rules/**/*.md` |
 | OpenCode | `AGENTS.md` | `~/.config/opencode/AGENTS.md` |
 | OpenAI Codex | `AGENTS.override.md`, `AGENTS.md`, configured fallback files | `~/.codex/AGENTS.override.md`, `~/.codex/AGENTS.md` |
 | Cursor | `.cursorrules` (legacy), `.cursor/rules/**/*.mdc` | User Rules in Cursor settings |
 | GitHub Copilot | `.github/copilot-instructions.md`, `.github/instructions/**/*.instructions.md`, `AGENTS.md` where supported | Product/surface-specific personal instructions |
-| Windsurf | `.windsurfrules` | — |
+| Windsurf / Cascade | `.windsurfrules`, `.windsurf/rules/**/*.md`; `.devin/rules/**/*.md` where supported by the installed client | `~/.codeium/windsurf/memories/global_rules.md` where supported |
 
 > **Tool behavior note:** Loading rules, fallback names, file formats, and precedence can change by tool and surface (for example, IDE chat, CLI, cloud agent, or code review). Verify the current tool's official loading rules before recommending file consolidation, fallback assumptions, migration steps, or cross-file alignment. For Codex, inspect `.codex/config.toml` when present to identify configured fallback names and byte limits; do not treat it as a context file unless the user asks to audit configuration.
 
@@ -27,39 +36,17 @@ Audit, evaluate, and improve AI project context files to ensure your AI coding a
 
 ### Phase 1: Discovery
 
-Find all AI context files in the repository. Use the command style that fits the current environment; the examples below are starting points, not a requirement to run Bash on every system.
+Start with the requested files or subtree; scan the repository only for a repository-wide audit. For an exact file, inspect relevant in-repository ancestors and references only as needed to establish its loading scope. Discover candidates before reading their contents.
 
-```bash
-rg --files -g 'CLAUDE.md' -g '.claude.local.md' -g 'AGENTS.md' -g 'AGENTS.override.md' \
-  -g '.cursorrules' -g '.windsurfrules' \
-  -g '.github/copilot-instructions.md' -g '.github/instructions/**/*.instructions.md' \
-  -g '**/.cursor/rules/**/*.mdc' \
-  -g '!node_modules/**' -g '!.git/**' -g '!dist/**' -g '!build/**'
+Run this single-line command from the selected audit root in PowerShell or a POSIX shell. Hidden and ignored candidates are included deliberately; explicit exclusions prune dependencies, generated content, Git internals, and `.my/`. Add known project-specific generated directories to the exclusions and configured fallback filenames as exact candidates when applicable.
 
-# POSIX fallback
-find . \( \
-  -name "CLAUDE.md" -o -name ".claude.local.md" \
-  -o -name "AGENTS.md" -o -name "AGENTS.override.md" \
-  -o -name ".cursorrules" \
-  -o -name ".windsurfrules" \
-  -o -name "copilot-instructions.md" \
-  -o -path "*/.cursor/rules/*.mdc" \
-  -o -path "*/.github/instructions/*.instructions.md" \
-\) -not -path "*/node_modules/*" -not -path "*/.git/*" 2>/dev/null
+```text
+rg --files --hidden --no-ignore -g 'CLAUDE.md' -g 'CLAUDE.local.md' -g 'AGENTS.md' -g 'AGENTS.override.md' -g '.cursorrules' -g '.windsurfrules' -g '**/.claude/rules/**/*.md' -g '**/.cursor/rules/**/*.mdc' -g '**/.github/copilot-instructions.md' -g '**/.github/instructions/**/*.instructions.md' -g '**/.windsurf/rules/**/*.md' -g '**/.devin/rules/**/*.md' -g '!**/node_modules/**' -g '!**/.git/**' -g '!**/.my/**' -g '!**/dist/**' -g '!**/build/**' -g '!**/.venv/**' .
 ```
 
-```powershell
-# PowerShell fallback
-Get-ChildItem -Recurse -Force -File |
-  Where-Object {
-    $_.FullName -notmatch '\\(node_modules|\.git|dist|build)\\' -and
-    ($_.Name -in @('CLAUDE.md', '.claude.local.md', 'AGENTS.md', 'AGENTS.override.md', '.cursorrules', '.windsurfrules', 'copilot-instructions.md') -or
-     $_.FullName -match '[\\/]\.cursor[\\/]rules[\\/].+\.mdc$' -or
-     $_.FullName -match '[\\/]\.github[\\/]instructions[\\/].+\.instructions\.md$')
-  }
-```
+Honor active command-wrapper requirements. If `rg` is unavailable, use the environment's file search or native shell traversal with the same scope, hidden/ignored-file handling, and exclusions; prune excluded directories before descending. Do not follow directory links outside the authorized scope. Report unreadable or uninspected areas as coverage limits, not as an absence of rules.
 
-Only process files found inside the repository by default. Do **not** inspect or read global user files (`~/.claude/CLAUDE.md`, `~/.config/opencode/AGENTS.md`, `~/.codex/AGENTS.md`, etc.) unless the user explicitly asks to audit their global rules. When global files are included by explicit request, treat them as **audit-only**: you may compare them, score them, and recommend changes, but you must not modify them. Identify each file's tool, product surface, scope, and loading behavior from official documentation and repository configuration (for example, `.vscode/`, `opencode.json`, `.cursor/`, `.codex/config.toml`). Compare files only when the selected surface can load them together; otherwise report them separately. If multiple tools are used, process all their project-level files.
+Only process files inside the authorized repository scope by default. Do **not** inspect global user files unless the user explicitly requests their audit; those files remain **audit-only**. For each candidate, identify the tool/client, product surface, working directory, path/activation conditions, imports, and precedence using relevant configuration and official documentation. A discovered file is not necessarily active. Resolve references before following them, keep external targets outside the audit unless authorized, and report unknown loading behavior or uninspected global/ancestor rules as coverage limits. Compare jointly active rules for conflicts; compare different tools separately for shared project requirements. Do not expand a focused audit to every tool automatically.
 
 **File Types & Locations:**
 
@@ -75,6 +62,8 @@ Only process files found inside the repository by default. Do **not** inspect or
 
 For each context file found, evaluate against quality criteria. See [references/quality-criteria.md](references/quality-criteria.md) for detailed rubrics.
 
+Score against the file's actual responsibility and applicable inherited context. Mark irrelevant criteria **N/A**, explain why, and normalize: `100 × earned points / applicable maximum points`. A scoped security rule does not need build commands or an architecture map. No applicable criteria means no numerical score. If coverage is incomplete, mark the assessment provisional rather than claiming verified alignment.
+
 **Quick Assessment Checklist:**
 
 | Criterion | Points | Check |
@@ -86,7 +75,7 @@ For each context file found, evaluate against quality criteria. See [references/
 | Currency | 15 | Does it reflect current codebase and the selected tool surface's supported format/loading behavior? |
 | Actionability | 15 | Are instructions concrete and their commands verified at a stated evidence level? |
 | Leanness | 10 | No redundant, duplicate, or padded content? |
-| Cross-file alignment | 10 | No conflicts or duplications across sibling context files? Use full credit when only one context file exists. |
+| Cross-file alignment | 10 | No unresolved conflicts or unnecessary duplication among jointly active rules? Use N/A if no comparison applies. |
 
 **Quality Scores:**
 - **A (90-100)**: Comprehensive, current, actionable, lean
@@ -97,25 +86,17 @@ For each context file found, evaluate against quality criteria. See [references/
 
 **Length Guidelines:**
 
-Treat line counts as review prompts, not automatic pass/fail thresholds. Prefer a documented tool byte limit and format requirements when available; flag a file that is long only when its content or loading limit makes it harmful.
-
-| File scope | Recommended length | Hard limit |
-|---|---|---|
-| Global user rules (`~/.claude/CLAUDE.md`) | 60–120 lines | 200 lines |
-| Project root (`CLAUDE.md` / `AGENTS.md`) | 80–150 lines | 250 lines |
-| Subdirectory / package-specific | 20–60 lines | 100 lines |
-
-If a file exceeds the hard limit, flag it and recommend splitting into focused sections or moving stable rules to a shared parent file.
+Use length as a review signal, not a pass/fail threshold. Only a verified limit of the selected client is a hard loading limit; state its unit and whether it applies per file or to the combined loaded context. Recommend trimming for demonstrated redundancy or loading cost while preserving required behavior. Splitting into automatically imported files does not reduce total loaded context; distinguish imports from references read on demand.
 
 ### Phase 2b: Cross-File Alignment Check
 
-When multiple context files are found, compare only files that can be loaded together for the selected tool surface. Record the surface and precedence before comparing them. For example, do not call a Copilot IDE-only file inconsistent with a cloud-agent-only file without evidence that both apply to the task.
+For runtime conflicts and duplication, compare only rules that can apply together to the same task, recording activation conditions and documented precedence. A valid scoped override is not an unresolved conflict. Separately check cross-tool coverage of shared project requirements; tool-specific differences are not defects by themselves.
 
 1. **Duplicated rules** — same rule stated in multiple files verbatim or near-verbatim.
-   → Flag and recommend keeping it only in the most appropriate scope (global vs project).
+   → Consolidate only if the retained rule remains available in every intended scope; do not rely on an uninspected global file to justify deleting a shared project rule.
 
 2. **Conflicting rules** — files that give contradictory instructions on the same topic (e.g., one says "always use tabs", another says "use 2-space indent").
-   → Flag the conflict explicitly; do not silently pick one.
+   → Report unresolved contradictions after accounting for supported precedence and intentional exceptions; do not silently pick one.
 
 3. **Scope misplacement** — project-specific rules in global files, or user preference rules in shared project files.
    → Recommend moving to the correct scope.
@@ -179,12 +160,12 @@ After outputting the quality report, draft targeted diffs. Do not edit yet.
 
 **Update Guidelines (Critical):**
 
-0. **Trim before adding** — if the file is at or above the recommended length, identify what to remove first before proposing any additions. Possible removals:
-   - Rules that are obvious or already enforced by the AI by default
+0. **Trim demonstrated redundancy** — remove low-value content when justified, without requiring equal deletions for useful additions. Preserve the behavior required by Shared Execution Rules. Possible removals:
+   - Generic explanations that add no project-specific constraint
    - Duplicated rules that exist in a parent/sibling file
    - Overly verbose explanations that can be compressed to one line
    - Outdated sections that no longer reflect the codebase
-   Never add content that pushes the file past the hard limit without removing equivalent content.
+   Check verified client loading limits before adding or relocating content; do not use an invented line cap.
 
    **Prefer path references over inline content for low-frequency material** — if any rule explanation, workflow description, or reference material grows beyond ~5 lines, consider moving it to a dedicated file (e.g., `.claude/commands.md`, `docs/architecture.md`) and replace it with a one-line pointer such as `See docs/architecture.md`. Keep high-frequency operational rules inline when they are important to get right at a glance. The context file should stay focused, but it does not need to become a pointer-only index.
 
@@ -195,7 +176,7 @@ After outputting the quality report, draft targeted diffs. Do not edit yet.
    - Testing approaches that work
    - Configuration quirks
 
-   **Dynamic-state ownership is a hard rule** — AI instruction files contain stable, high-frequency operational constraints, architecture pointers, commands, and long-lived safety invariants. Route AI handoff state to `PROGRESS.md`, human-facing dated summaries to `PROJECT_UPDATES.md`, formal routes/acceptance to plans, and raw evidence to runs/experiments. Keep only a one-line pointer in the context file; never copy the current values.
+   Apply the dynamic-state ownership rule in **Shared Execution Rules**; reuse existing authoritative records and verify pointers before inserting them.
 
 2. **Keep it minimal** — avoid:
    - Restating what's obvious from the code
@@ -227,7 +208,7 @@ After outputting the quality report, draft targeted diffs. Do not edit yet.
 
 ### Phase 5: Apply Approved Diffs
 
-Ask once for approval after all proposed diffs are shown. After the user approves the specified diffs, apply only those changes using the current environment's available editing mechanism. Preserve existing content structure, then verify the write with a targeted file read, `git diff`, or `git status`.
+Apply the authorization rules in **Shared Execution Rules**: when implementation is already authorized, apply changes within that scope without asking again; otherwise ask once after showing the proposed diffs. Preserve existing content structure, then verify a focused diff or relevant content read and any affected format. Report what was actually verified and what remains unverified.
 
 ## Templates
 
@@ -248,7 +229,7 @@ See [references/templates.md](references/templates.md) for context file template
 4. **Missing environment setup**: Required env vars or config
 5. **Broken test commands**: Test scripts that have changed
 6. **Undocumented gotchas**: Non-obvious patterns not captured
-7. **File too long**: Exceeds recommended length; candidate sections for trimming or splitting
+7. **Excess loading cost**: Demonstrated redundancy or a verified client loading limit requires trimming or scoped loading
 8. **Duplicate rules**: Same rule repeated across multiple context files
 9. **Conflicting rules**: Different files give contradictory instructions on the same topic
 10. **Scope misplacement**: Project rules in global file, or personal preferences in shared file
@@ -261,7 +242,7 @@ When presenting recommendations, remind users:
 
 - **Keep it concise**: Context files should be human-readable; dense is better than verbose
 - **Actionable commands**: All documented commands should be copy-paste ready
-- **Local overrides**: Use tool-specific local files (for example, `.claude.local.md`) for personal preferences not shared with the team (add to `.gitignore`)
+- **Local overrides**: Use supported local files (for example, `CLAUDE.local.md`) and the user's existing exclusion policy; do not change `.gitignore` as an automatic side effect
 - **Multi-tool projects**: Verify each tool's current loading behavior before recommending one shared file, multiple thin adapter files, or a mixed strategy
 - **Review periodically**: Context files go stale as the codebase evolves; review after major refactors or dependency changes
 

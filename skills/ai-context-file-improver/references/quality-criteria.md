@@ -4,6 +4,8 @@
 
 Total: 100 points across 8 criteria. Weights match SKILL.md assessment checklist.
 
+Evaluate only responsibilities applicable to this file, accounting for context already supplied by active ancestors/imports. Mark other criteria N/A with a reason and normalize `100 × earned points / applicable maximum points`; do not deduct points or add sections for unrelated responsibilities. No applicable criteria means no numerical score. Incomplete loading evidence makes the assessment provisional.
+
 ### 1. Commands/Workflows (15 points)
 
 **15 points**: All essential commands documented with context
@@ -92,9 +94,9 @@ Total: 100 points across 8 criteria. Weights match SKILL.md assessment checklist
 
 **10 points**: No redundant, duplicate, or padded content
 
-- No rules repeated from parent/sibling files
+- No unnecessary repetition among rules active for the same task
 - No generic advice not specific to the project
-- File within recommended length
+- No demonstrated loading waste or violation of a verified client limit; line count alone is not a defect
 
 **5 points**: Minor bloat or a few redundant rules
 
@@ -102,7 +104,7 @@ Total: 100 points across 8 criteria. Weights match SKILL.md assessment checklist
 
 ### 8. Cross-File Alignment (10 points)
 
-**10 points**: No conflicts or duplications across files that the selected tool surface can load together (or only one applicable context file exists)
+**10 points**: No unresolved conflicts or unnecessary duplication across jointly active rules, accounting for supported precedence and intentional scoped overrides. Use N/A when no comparison applies; uninspected context is not verified alignment.
 
 - AI instruction files link to, rather than mirror, the authoritative dynamic progress/update files
 
@@ -113,7 +115,7 @@ Total: 100 points across 8 criteria. Weights match SKILL.md assessment checklist
 ## Assessment Process
 
 1. Read the context file completely
-2. Record the tool, product surface, scope, and precedence for each file before comparing it with another file.
+2. Record the tool/client, product surface, working directory, activation conditions, imports, scope, and precedence before comparison. Distinguish runtime conflicts from cross-tool coverage; report uninspected global or external rules as coverage limits.
 3. Cross-reference with the actual codebase using explicit evidence levels:
    - **Configuration inspection**: inspect scripts, manifests, CI, and tool configuration without executing a command.
    - **Safe execution**: run a scoped, non-destructive command only when it is safe under the current permissions.
@@ -122,8 +124,8 @@ Total: 100 points across 8 criteria. Weights match SKILL.md assessment checklist
 4. Capture evidence for each material issue:
    - File paths, section names, or commands checked
    - Whether the issue is confirmed, likely, or uncertain
-5. Score each criterion
-6. Calculate total and assign grade
+5. Score applicable criteria and explain N/A criteria
+6. Normalize the applicable total and assign a grade; label incomplete assessments provisional
 7. List specific issues found with a priority:
    - High: likely to mislead the AI or cause repeated mistakes
    - Medium: useful to fix soon, but not usually session-breaking

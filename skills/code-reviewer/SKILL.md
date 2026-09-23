@@ -1,8 +1,9 @@
 ---
 name: code-reviewer
 description: >-
-  Review code changes when explicitly requested or before declaring material or
-  high-risk implementation work complete. Report evidence-backed correctness,
+  Review code changes when explicitly requested or before completing implementation
+  that changes behavior, interfaces, state, data, or security boundaries. Scale
+  review depth to risk. Report evidence-backed correctness,
   security, reliability, performance, data-integrity, architecture, and test
   issues. Skip automatic completion review for documentation-only or trivial
   mechanical changes unless they affect sensitive behavior; explicit review
@@ -14,8 +15,11 @@ description: >-
 Perform an evidence-based technical review of a precisely defined change set.
 
 Announce at the start, in the active conversation language, that the code-reviewer
-skill is being used. A review is read-only unless the user separately authorizes
-fixes; do not treat a review request as permission to modify code or external state.
+skill is being used. A standalone review request is read-only unless fixes are
+authorized. During an already authorized implementation task, findings caused by
+that task may be fixed within the existing scope without renewed permission.
+An independent reviewer remains read-only and returns findings to the implementer.
+Neither review mode authorizes unrelated changes or external mutations.
 
 ## Phase 1: Scope the Review
 
@@ -25,6 +29,9 @@ fixes; do not treat a review request as permission to modify code or external st
    account for staged, unstaged, and relevant untracked files. For a commit, range,
    branch, or PR review, use the requested target and correct base or merge-base;
    never assume the base branch is `main`.
+   For automatic completion review, target the current task's changes and necessary
+   related code; do not include unrelated user changes merely because they are in
+   the same working tree.
 3. Categorize the change and its risk. Treat authentication, authorization,
    secrets, command execution, external input, payments, persistence, migrations,
    concurrency, public contracts, IPC, and irreversible side effects as high risk
@@ -37,7 +44,7 @@ consumers, contracts, and tests needed to validate the changed behavior. For
 high-risk changes, follow the complete relevant control and data flow rather than
 reviewing isolated lines.
 
-Check for:
+Check the following dimensions where relevant to the changed behavior:
 
 - **Correctness** — does the logic match the stated intent and preserve required invariants? are boundary and failure cases handled?
 - **Security** — input validation, auth checks, secrets in code, SQL/command injection, XSS
@@ -50,8 +57,10 @@ Check for:
 Use two review layers so inexpensive convention checks do not crowd out subtle
 behavioral defects:
 
-- **Mechanical/convention layer** — run or inspect the project formatter, linter,
-  type checker, and explicit repository conventions. Report failures separately.
+- **Mechanical/convention layer** — reuse valid formatter, linter, type-checker,
+  and project-convention results. Run additional relevant checks only when needed,
+  using modes that do not rewrite reviewed files; do not install missing tools or
+  dependencies just to perform a review. Report failures separately.
   A naming or formatting issue belongs in the main findings only when it can
   cause misuse, semantic ambiguity, contract breakage, or a safety mistake.
 - **Behavioral layer** — prioritize reachable but easy-to-miss defects in control
@@ -67,10 +76,26 @@ problem, or violates a requirement needed by the change. Verify the execution
 path or invariant and cite the most relevant `file:line`. Unless the user requests
 a broader audit, omit unrelated pre-existing problems.
 
-For subtle issues, actively test competing explanations and boundary sequences,
-but keep the reporting threshold unchanged: state the reachable trigger, the
-violated contract or invariant, the actual outcome, and the material impact.
-Review depth may increase without increasing low-value output.
+Before confirming a finding, check relevant callers, upstream validation,
+guards, configuration, and documented contracts for evidence that prevents the
+suspected failure or makes the behavior intentional. A missing local check or a
+suspicious pattern alone does not establish a reachable defect. For subtle issues,
+test competing explanations and boundary sequences within the review scope.
+
+Support each confirmed finding with a reproduction result or a sufficiently
+complete static execution path: reachable trigger, expected behavior grounded in
+a requirement or contract, observed or logically derived outcome, and material
+impact. Identify which kind of evidence supports the conclusion; never describe
+static inference as an executed test. If a necessary premise is unknown, keep the
+conclusion conditional rather than asserting a defect.
+
+Apply this evidence threshold to progress updates as well as the final report.
+Say a root cause is confirmed only when the evidence connects the proposed cause
+to the symptom and distinguishes relevant competing explanations. Otherwise label
+it a candidate cause and name the missing check. A failed tool command alone does
+not establish a product defect; distinguish validation setup failures from failures
+of the reviewed behavior. Review depth may increase without increasing low-value
+output.
 
 Do not promote unsupported suspicions to findings. Put important uncertainties
 caused by unavailable context or unrun validation under **Unverified risks**, with
@@ -114,9 +139,12 @@ Group findings by severity. Only include what was actually found — omit empty 
 
 Omit empty sections. Order findings by severity, then by confidence and likely
 impact. Deduplicate findings with the same root cause. Do not pad
-the review with praise or generic advice. If no issues are found, say: "No blocking
-findings found in the reviewed scope." Do not equate a clean static review with
-successful tests, CI, deployment validation, or merge readiness.
+the review with praise or generic advice. If no issues are found, say: "No
+substantiated issues found in the reviewed scope," and identify the scope and
+checks performed. This does not prove that no defects exist. Use "No blocking
+findings" only when any non-blocking findings remain explicitly reported. Do not
+equate a clean static review with successful tests, CI, deployment validation, or
+merge readiness.
 
 Do not output purely optional Low findings by default. Include them only when the
 user explicitly requests style, maintainability, or cleanup feedback, and keep
@@ -127,16 +155,6 @@ them separate from correctness and risk findings.
 - **Critical or High findings** → fix before merging and re-run the relevant review.
 - **Medium findings only** → state the bounded risk and the validation or explicit risk acceptance needed to defer them.
 - **No blocking findings** → state the reviewed scope, verification status, and residual risks; make no merge-readiness claim unless the required validation evidence is available.
-
-## What to Prioritize
-
-| Area | Always check | Check if relevant |
-|------|-------------|-------------------|
-| Security | Input validation, auth, secrets | Crypto, session, CSRF |
-| Data | Transactions, nulls, type safety | Migrations, schema changes |
-| Performance | DB queries, loops | Caching, concurrency |
-| Reliability | Error propagation, cleanup | Retries, timeouts, idempotency |
-| Tests | New paths covered | Edge cases, failure paths |
 
 ## What NOT to flag
 
