@@ -6,8 +6,9 @@ description: >-
   review depth to risk. Report evidence-backed correctness,
   security, reliability, performance, data-integrity, architecture, and test
   issues. Skip automatic completion review for documentation-only or trivial
-  mechanical changes unless they affect sensitive behavior; explicit review
-  requests always apply.
+  mechanical changes unless they affect sensitive behavior. Requests with staging
+  or commit intent belong to commit-gatekeeper when available. Focused state or
+  data-flow audits belong to stateflow-reviewer when available.
 ---
 
 # Code Reviewer
@@ -20,6 +21,27 @@ authorized. During an already authorized implementation task, findings caused by
 that task may be fixed within the existing scope without renewed permission.
 An independent reviewer remains read-only and returns findings to the implementer.
 Neither review mode authorizes unrelated changes or external mutations.
+
+## Routing Boundaries
+
+- **Commit or staging intent:** when `commit-gatekeeper` is available, it owns the
+  complete workflow: scope, staging, review depth, documentation checks,
+  validation, blocking decisions, and commit execution. Do not start a parallel
+  standalone `code-reviewer` pass for requests such as "审核并提交", "严审提交",
+  `review and commit`, `stage`, or `pre-commit`. If the user explicitly invokes
+  `$code-reviewer` together with commit intent, or the gatekeeper explicitly
+  delegates a review pass, return one review result to the gatekeeper; the
+  gatekeeper remains the sole owner of commit blocking and execution.
+- **Focused state-flow audit:** when `stateflow-reviewer` is available, requests
+  limited to state transitions, lifecycle, events, scheduling, side effects,
+  data flow, or counterexamples use that specialist instead of this skill.
+- **Broad code review with stateful risk:** this skill remains the primary review.
+  If `stateflow-reviewer` is also used as a specialist input, integrate and
+  deduplicate its findings into one report rather than running two independent
+  user-facing review flows.
+- **Standalone and completion review:** explicit code review without commit intent,
+  and automatic review before completing a behavior-changing implementation,
+  continue to use this skill.
 
 ## Phase 1: Scope the Review
 
