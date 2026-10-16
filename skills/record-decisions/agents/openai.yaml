@@ -1,4 +1,0 @@
-interface:
-  display_name: "会话上下文记录"
-  short_description: "记录会话关键决策、约束、状态与交接"
-  default_prompt: "使用 $record-decisions 记录当前会话的对齐结论、状态、约束与下一步。"
